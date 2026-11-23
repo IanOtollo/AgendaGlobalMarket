@@ -35,7 +35,7 @@ export default function Login() {
   };
 
   return (
-    <main className="grid min-h-screen lg:grid-cols-2">
+    <main className="grid h-[100dvh] overflow-hidden lg:grid-cols-2">
       <section className="relative hidden overflow-hidden bg-primary p-12 text-primary-foreground lg:flex lg:flex-col lg:justify-between">
         <span className="relative flex items-center gap-3 font-semibold">
           <span className="inline-flex rounded-xl bg-white px-3 py-2">
@@ -51,9 +51,10 @@ export default function Login() {
         <p className="relative text-sm text-primary-foreground/50">{BRAND.tagline}</p>
       </section>
 
-      <section className="flex items-center justify-center px-4 py-16 sm:px-6">
+      <section className="flex h-full min-h-0 flex-col px-4 sm:px-6">
+        <div className="flex flex-1 items-center justify-center">
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease }} className="w-full max-w-sm">
-          <Link href="/" className="mb-10 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground">
+          <Link href="/" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground">
             <ArrowLeft className="h-4 w-4" /> Back to site
           </Link>
           <h1 className="text-2xl font-semibold tracking-tight">Sign in</h1>
@@ -66,6 +67,8 @@ export default function Login() {
             <Button type="submit" className="w-full" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</Button>
           </form>
         </motion.div>
+        </div>
+        <p className="shrink-0 py-4 text-center text-xs text-muted-foreground">© {new Date().getFullYear()} {BRAND.name}. All rights reserved.</p>
       </section>
     </main>
   );
