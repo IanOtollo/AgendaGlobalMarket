@@ -202,7 +202,7 @@ export default function SettingsPage() {
                 return (
                   <li key={t.id} className="rounded-lg border border-border/60 p-2.5">
                     <div className="flex flex-wrap items-center gap-2.5">
-                      <button type="button" onClick={() => setOpen(open === t.id ? null : t.id)} aria-expanded={open === t.id} aria-label={isSaved ? `Description for ${t.name || "this trade"}` : `Icon and description for ${t.name || "this trade"}`} title={isSaved ? "The icon is fixed once a trade is saved" : undefined}
+                      <button type="button" onClick={() => setOpen(open === t.id ? null : t.id)} aria-expanded={open === t.id} aria-label={isSaved ? `Description for ${t.name || "this trade"}` : `Icon and description for ${t.name || "this trade"}`}
                         className={cn(iconBtn, "border border-border bg-background hover:bg-muted")}><Icon className="h-5 w-5" aria-hidden /></button>
                       <div className="min-w-[9rem] flex-1"><Input value={t.name} onChange={(e) => patch(t.id, { name: e.target.value })} placeholder="Trade name" aria-label="Trade name" /></div>
                       <div className="min-w-[9rem] flex-1"><Input value={t.noun} onChange={(e) => patch(t.id, { noun: e.target.value })} placeholder="People are called, e.g. Plumbers" aria-label="People are called" /></div>
@@ -217,7 +217,6 @@ export default function SettingsPage() {
                               className={cn("flex h-10 items-center justify-center rounded-lg border", t.icon === key ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-muted")}><I className="h-5 w-5" aria-hidden /></button>
                           ))}
                         </div>}
-                        {isSaved && <p className="text-xs text-muted-foreground">The icon is fixed once a trade is saved.</p>}
                         <Field label="Short description (shown on the website)"><Input value={t.blurb} onChange={(e) => patch(t.id, { blurb: e.target.value })} placeholder="Leak repairs, pipe installation…" /></Field>
                       </div>
                     )}
