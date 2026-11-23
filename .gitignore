@@ -1,0 +1,8 @@
+node_modules
+.next
+.env*.local
+.admin-initial-password.txt
+data/db.json
+*.log
+data/uploads/
+.next-build

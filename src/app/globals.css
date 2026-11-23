@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------------------------------------
+   Tokens. Values are HSL triplets so Tailwind opacity utilities work (hsl(var(--x) / .5)).
+   Palette = the existing brand only: navy, yellow and the cool neutrals. Roles: see docs/design-system.md.
+   ---------------------------------------------------------------------------------------------- */
+:root {
+  /* Admin palette (unchanged) */
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --primary: 222 62% 18%;
+  --primary-foreground: 0 0% 98%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --border: 240 5.9% 90%;
+  --card: 0 0% 100%;
+  --accent: 240 4.8% 95.9%;
+  --radius: 0.5rem;
+
+  /* Shared across the whole app */
+  --brand: 45 100% 51%;            /* yellow: fills only (CTAs, marks), always with navy text */
+  --on-accent: 222 62% 16%;        /* navy text that sits on yellow */
+  --border-strong: 220 10% 52%;    /* form-control borders, 3.9:1 on white */
+  --ring: 222 62% 16%;             /* focus ring */
+  --inverse: 222 47% 11%;          /* darkest neutral: footer, trust band */
+  --inverse-foreground: 0 0% 98%;
+  --success: 152 60% 36%;  --success-text: 152 60% 32%;
+  --warning: 32 95% 44%;   --warning-text: 32 95% 36%;
+  --info: 217 80% 52%;     --verified: 217 80% 52%;
+  --destructive: 0 72% 51%;
+  --radius-card: 20px;
+}
+
+/* Public site: roles --bg, --surface, --surface-muted, --border, --text, --text-muted, --accent (yellow), --ink (navy). */
+:root:has(.site), .site {
+  --background: 222 25% 98.5%;     /* --bg: navy tint (#FAFBFC) */
+  --foreground: 222 47% 11%;       /* --text */
+  --card: 0 0% 100%;               /* --surface */
+  --primary: 222 62% 16%;          /* --ink: text, links, active states, focus */
+  --primary-foreground: 0 0% 98%;
+  --muted: 220 16% 96%;            /* --surface-muted */
+  --muted-foreground: 220 10% 38%; /* --text-muted */
+  --border: 220 14% 88%;           /* decorative hairlines only */
+}
+
+/* Dark mode follows the system setting, built from the same palette. */
+@media (prefers-color-scheme: dark) {
+  :root:has(.site), .site {
+    --background: 222 47% 7%;
+    --foreground: 0 0% 98%;
+    --card: 222 47% 11%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 222 47% 11%;
+    --muted: 222 35% 15%;
+    --muted-foreground: 220 10% 68%;
+    --border: 222 25% 20%;
+    --ring: 0 0% 98%;
+    --success-text: 152 60% 52%;
+    --warning-text: 32 95% 58%;
+    color-scheme: dark;
+  }
+}
+
+.site ::selection { background: hsl(var(--brand)); color: hsl(var(--on-accent)); }
+
+/* Visible focus on everything interactive (WCAG 2.4.7 / 2.4.11). Placed after utilities so `outline-none` cannot hide it. */
+:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
+.site .on-dark :focus-visible, .site footer :focus-visible { outline-color: hsl(var(--brand)); }
+
+/* Card photo morphs into the profile hero (View Transitions API, where supported). */
+::view-transition-group(pro-hero) { animation-duration: 400ms; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+.vt-pro-hero { view-transition-name: pro-hero; }
+
+/* Respect reduced-motion for CSS transitions, animations and smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
+
+/* Custom scrollbars (page and inner scroll areas): slim thumb on a light track.
+   Chromium and Safari use the -webkit rules (Chromium ignores them if scrollbar-width or
+   scrollbar-color is also set, so those are given to Firefox only). */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: hsl(var(--muted)); }
+::-webkit-scrollbar-corner { background: hsl(var(--muted)); }
+::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary) / 0.45);
+  border: 3px solid hsl(var(--muted));
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover { background-color: hsl(var(--primary) / 0.75); }
+::-webkit-scrollbar-thumb:active { background-color: hsl(var(--primary)); }
+@-moz-document url-prefix() {
+  * { scrollbar-width: thin; scrollbar-color: hsl(var(--primary) / 0.5) hsl(var(--muted)); }
+}
+
+html { scroll-padding-top: 5rem; }
+body { @apply bg-background text-foreground antialiased; font-size: 1rem; line-height: 1.55; }
+h1, h2, h3 { @apply tracking-tight leading-tight; }

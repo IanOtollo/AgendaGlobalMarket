@@ -1,0 +1,16 @@
+import { ogCard } from "@/components/site/og-card";
+import { TRADE_NOUN, categoryBySlug } from "@/lib/categories";
+import { getPublicPros } from "@/server/public";
+
+export const alt = "Professionals by trade";
+export const size = { width: 1200, height: 630 };
+export const contentType = "image/png";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export default async function Image({ params }: { params: { category: string } }) {
+  const c = categoryBySlug(params.category);
+  if (!c) return ogCard({ eyebrow: "Services", title: "Agenda Global Market" });
+  const n = getPublicPros().filter((p) => p.category === c.name).length;
+  return ogCard({ eyebrow: "Nairobi", title: `${TRADE_NOUN[c.name]} you can book through one office`, lines: [`${n} ${n === 1 ? "professional" : "professionals"} listed`] });
+}
