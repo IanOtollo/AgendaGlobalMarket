@@ -83,7 +83,8 @@ export default function SettingsPage() {
 
   const saveTrades = async () => {
     if (tradesBad) return toast("error", "Fix the highlighted trades first");
-    const clean = draft.map((t) => ({ ...t, name: t.name.trim(), noun: t.noun.trim(), blurb: t.blurb.trim() }));
+    // A saved trade keeps its icon; only a new trade can choose one.
+    const clean = draft.map((t) => ({ ...t, name: t.name.trim(), noun: t.noun.trim(), blurb: t.blurb.trim(), icon: saved.find((o) => o.id === t.id)?.icon ?? t.icon }));
     const renames: Record<string, string> = {};
     saved.forEach((o) => { const n = clean.find((t) => t.id === o.id); if (n && n.name !== o.name) renames[o.name] = n.name; });
     const removed = saved.filter((o) => !clean.some((t) => t.id === o.id)).map((o) => o.name);
@@ -196,11 +197,12 @@ export default function SettingsPage() {
               {draft.map((t, i) => {
                 const Icon = iconOf(t.icon);
                 const u = useOfTrade(saved.find((o) => o.id === t.id)?.name ?? t.name);
-                const inUse = u.workers + u.jobs > 0 && saved.some((o) => o.id === t.id);
+                const isSaved = saved.some((o) => o.id === t.id);
+                const inUse = u.workers + u.jobs > 0 && isSaved;
                 return (
                   <li key={t.id} className="rounded-lg border border-border/60 p-2.5">
                     <div className="flex flex-wrap items-center gap-2.5">
-                      <button type="button" onClick={() => setOpen(open === t.id ? null : t.id)} aria-expanded={open === t.id} aria-label={`Icon and description for ${t.name || "this trade"}`}
+                      <button type="button" onClick={() => setOpen(open === t.id ? null : t.id)} aria-expanded={open === t.id} aria-label={isSaved ? `Description for ${t.name || "this trade"}` : `Icon and description for ${t.name || "this trade"}`} title={isSaved ? "The icon is fixed once a trade is saved" : undefined}
                         className={cn(iconBtn, "border border-border bg-background hover:bg-muted")}><Icon className="h-5 w-5" aria-hidden /></button>
                       <div className="min-w-[9rem] flex-1"><Input value={t.name} onChange={(e) => patch(t.id, { name: e.target.value })} placeholder="Trade name" aria-label="Trade name" /></div>
                       <div className="min-w-[9rem] flex-1"><Input value={t.noun} onChange={(e) => patch(t.id, { noun: e.target.value })} placeholder="People are called, e.g. Plumbers" aria-label="People are called" /></div>
@@ -209,12 +211,13 @@ export default function SettingsPage() {
                     </div>
                     {open === t.id && (
                       <div className="mt-3 space-y-3 border-t border-border/60 pt-3">
-                        <div className="grid grid-cols-5 gap-2 sm:grid-cols-10" role="group" aria-label="Choose an icon">
+                        {!isSaved && <div className="grid grid-cols-5 gap-2 sm:grid-cols-10" role="group" aria-label="Choose an icon">
                           {Object.entries(TRADE_ICONS).map(([key, { Icon: I, label }]) => (
                             <button key={key} type="button" aria-label={label} aria-pressed={t.icon === key} title={label} onClick={() => patch(t.id, { icon: key })}
                               className={cn("flex h-10 items-center justify-center rounded-lg border", t.icon === key ? "border-primary bg-primary text-primary-foreground" : "border-border hover:bg-muted")}><I className="h-5 w-5" aria-hidden /></button>
                           ))}
-                        </div>
+                        </div>}
+                        {isSaved && <p className="text-xs text-muted-foreground">The icon is fixed once a trade is saved.</p>}
                         <Field label="Short description (shown on the website)"><Input value={t.blurb} onChange={(e) => patch(t.id, { blurb: e.target.value })} placeholder="Leak repairs, pipe installation…" /></Field>
                       </div>
                     )}
