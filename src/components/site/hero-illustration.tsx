@@ -378,7 +378,7 @@ export function HeroIllustration() {
         </svg>
       </div>
       <div className="mt-3 rounded-2xl border border-border bg-card p-4 text-card-foreground">
-        <p key={cur.slug} className="flex flex-wrap items-baseline gap-x-2 text-xl font-semibold leading-tight">{cur.label}<span className="text-sm font-normal text-muted-foreground">{cur.note}</span></p>
+        <p key={cur.slug} className="flex flex-wrap items-baseline gap-x-2 text-xl font-semibold leading-tight">{cur.label}</p>
         <div className="mt-2 flex gap-1.5" role="tablist" aria-label="Trades">
           {AT_WORK.map((w, n) => (
             <button key={w.slug} type="button" role="tab" aria-selected={n === i} aria-label={w.label} onClick={() => setI(n)} className="group relative h-6 flex-1 focus-visible:outline-none">
