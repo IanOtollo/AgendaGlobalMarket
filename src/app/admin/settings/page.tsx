@@ -24,7 +24,7 @@ const removeBtn = cn(iconBtn, "text-muted-foreground hover:bg-destructive/10 hov
 function Fold({ id, title, summary, children, defaultOpen = false }: { id: string; title: string; summary: ReactNode; children: ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <section className={card} aria-labelledby={`${id}-h`}>
+    <section className={cn(card, "min-w-0")} aria-labelledby={`${id}-h`}>
       <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} aria-controls={`${id}-body`} className="flex w-full items-center justify-between gap-4 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         <span className="min-w-0">
           <span id={`${id}-h`} className="block text-lg font-semibold">{title}</span>
@@ -159,7 +159,7 @@ export default function SettingsPage() {
   return (
     <>
       <PageHeader title="Settings" />
-      <div className="grid items-start gap-6 xl:grid-cols-2">
+      <div className="grid items-start gap-6 xl:grid-cols-2 [&>*]:min-w-0">
         {/* Left: the everyday details */}
         <div className="space-y-6">
           <section className={cn(card, "space-y-4")} aria-labelledby="biz-h">
