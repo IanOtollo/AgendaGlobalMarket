@@ -6,7 +6,7 @@ import { SITE } from "@/lib/site";
 import { getPublicSettings } from "@/server/public";
 
 export const metadata: Metadata = { title: "About us", description: `${BRAND.name} provides house and building maintenance in Nairobi, booked through one office.`, alternates: { canonical: "/about" } };
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 export default async function Page() {
   const { adminPhone } = await getPublicSettings();

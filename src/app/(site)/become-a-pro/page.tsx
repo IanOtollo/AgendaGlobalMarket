@@ -9,7 +9,7 @@ import { tradesOf } from "@/lib/trades";
 import { getPublicSettings } from "@/server/public";
 
 export const metadata: Metadata = { title: "Become a pro", description: "Join the Agenda Global Market network of plumbers, carpenters, masons, electricians and painters. We handle the bookings and scheduling.", alternates: { canonical: "/become-a-pro" } };
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 export default async function Page() {
   const settings = await getPublicSettings();

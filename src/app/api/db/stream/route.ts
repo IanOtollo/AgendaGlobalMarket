@@ -3,6 +3,7 @@ import { getAdmin, unauthorized } from "@/server/auth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+export const maxDuration = 60; // the browser reconnects by itself when the connection ends
 
 // Live updates for the admin only (Server-Sent Events).
 export async function GET(req: Request) {

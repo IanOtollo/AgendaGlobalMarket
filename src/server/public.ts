@@ -1,5 +1,4 @@
-import { getDb } from "./db";
-import type { DB } from "@/lib/types";
+import { getPublicDb, type PublicSource } from "./db";
 import { AREA_BY_NAME } from "@/lib/areas";
 import { ratingOf } from "@/lib/rating";
 import { slugify } from "@/lib/slug";
@@ -10,10 +9,10 @@ import type { PublicPro, PublicSettings } from "@/lib/types";
 // The ONLY data the public website receives. Every field is copied by name; nothing is spread, so a new
 // private field added to the model can never leak by accident.
 export async function getPublicPros(): Promise<PublicPro[]> {
-  return publicProsOf(await getDb());
+  return publicProsOf(await getPublicDb());
 }
 
-export function publicProsOf(db: DB): PublicPro[] {
+export function publicProsOf(db: PublicSource): PublicPro[] {
   return db.providers.filter(isBookable).map((p) => {
     const area = AREA_BY_NAME[p.area];
     const pro: PublicPro = {
@@ -46,10 +45,10 @@ export function publicProsOf(db: DB): PublicPro[] {
 
 // The admin line is intentionally public: it is the one number customers are meant to call.
 export async function getPublicSettings(): Promise<PublicSettings> {
-  return publicSettingsOf(await getDb());
+  return publicSettingsOf(await getPublicDb());
 }
 
-export function publicSettingsOf(db: DB): PublicSettings {
+export function publicSettingsOf(db: PublicSource): PublicSettings {
   const { businessName, adminPhone } = db.settings;
   return { businessName, adminPhone, trades: tradesOf(db.settings).map(({ slug: _slug, ...t }) => t) };
 }

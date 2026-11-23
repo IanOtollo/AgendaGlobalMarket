@@ -27,6 +27,16 @@ export const useStore = () => {
   return c;
 };
 
+const COLLS = ["providers", "customers", "requests", "workOrders", "ratings"] as const;
+function changesBetween(before: DB, next: DB) {
+  const upserts: { coll: string; rid: string; data: unknown }[] = [];
+  for (const c of COLLS) {
+    const was = new Map((before[c] as { id: string }[]).map((r) => [r.id, JSON.stringify(r)]));
+    for (const r of next[c] as { id: string }[]) if (was.get(r.id) !== JSON.stringify(r)) upserts.push({ coll: c, rid: r.id, data: r });
+  }
+  return { upserts, settings: JSON.stringify(before.settings) !== JSON.stringify(next.settings) ? next.settings : undefined };
+}
+
 const nextNo = (d: DB) => `WO-${String(d.workOrders.length + 1).padStart(4, "0")}`;
 
 // Admin only. `initial` is read on the server after the admin session is verified, so nothing is shown before it is loaded.
@@ -49,12 +59,16 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
 
   // Apply locally right away, then send to the server which broadcasts to everyone else.
   const upd = (f: (d: DB) => DB): Promise<boolean> => {
-    const next = f(ref.current);
+    const before = ref.current;
+    const next = f(before);
     ref.current = next;
     setDb(next);
+    // Send only what this action changed, so a stale tab can never overwrite or remove someone else's newer records.
+    const { upserts, settings } = changesBetween(before, next);
+    if (!upserts.length && !settings) return Promise.resolve(true);
     return fetch("/api/db", {
-      method: "PUT", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ db: next, by: me.current }),
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ upserts, settings, by: me.current }),
     }).then((r) => r.ok).catch(() => false);
   };
 

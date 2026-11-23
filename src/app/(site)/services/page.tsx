@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "Browse plumbers, carpenters, masons, electricians and painters in Nairobi. Compare experience, qualifications and ratings, then book through one office.",
   alternates: { canonical: "/services" },
 };
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 export default async function ServicesPage() {
   const total = (await getPublicPros()).length;

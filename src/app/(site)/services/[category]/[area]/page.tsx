@@ -11,7 +11,8 @@ import { distanceKm } from "@/lib/geo";
 import { JsonLd, abs, breadcrumbLd, faqLd } from "@/lib/schema";
 import { getPublicPros, getPublicSettings } from "@/server/public";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
+export function generateStaticParams() { return []; } // pages are built on the first visit, then cached and refreshed in the background
 
 const NEAR_KM = 15;
 

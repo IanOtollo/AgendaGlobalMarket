@@ -15,7 +15,7 @@ Next.js 14 (App Router) · TypeScript · Tailwind 3.4 · Framer Motion · lucide
 ## Security model (Phase 0.5)
 - The public site is rendered from `src/server/public.ts` only (a field-by-field whitelist). Never spread a provider object into a public payload.
 - `/admin/*`, `/api/db` and `/api/db/stream` need the admin session (signed cookie). Checked in `src/middleware.ts`, the admin layout and every route handler. One admin account; credentials live in `.env.local` (`npm run admin:create`).
-- The only public APIs are `GET/POST /api/rate/[id]` and `GET /api/public/stream`, both rate-limited and validated.
+- The only public APIs are `GET/POST /api/rate/[id]` and `GET /api/public/data` (cached 30 s, public model only), both rate-limited and validated.
 - `npm run test:privacy` (server must be running) fails if any public page, script, API or stream contains private data or a phone number other than the admin line. Run it after any change to public pages or APIs.
 - Run the site with `npm run dev:keepalive` (auto-restarts on failure). There is no demo data: a new install starts empty.
 
@@ -24,3 +24,8 @@ Next.js 14 (App Router) · TypeScript · Tailwind 3.4 · Framer Motion · lucide
 - Deploy functions with `npx convex dev --once` (dev) or `npx convex deploy` (production deployment, then re-set `APP_SECRET` there).
 - Worker photos live in Convex file storage and are served through `/api/photo/[id]`.
 - `ADMIN_AUTH=open` temporarily disables sign-in (see `src/server/auth.ts`); remove it to enforce login.
+
+## Reliability
+- Admin saves send only the records that changed (`PATCH /api/db`). There is no whole-database write and no delete anywhere: staff are marked resigned or let go, never removed, so a stale tab cannot make a profile disappear.
+- The public site is built from `getPublicDb()` (providers, ratings, settings only), cached 30 s per server instance and served stale if Convex is briefly unreachable. Public pages use `revalidate = 30` (ISR); visitors poll `/api/public/data` once a minute instead of holding a connection.
+- Settings has a "Download backup" button (`GET /api/db/export`). Lists in admin are paginated (`src/components/ui/pagination.tsx`).

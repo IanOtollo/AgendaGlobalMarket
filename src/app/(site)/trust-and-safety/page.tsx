@@ -5,7 +5,7 @@ import { ContactCta, PageHero } from "@/components/site/page-parts";
 import { getPublicSettings } from "@/server/public";
 
 export const metadata: Metadata = { title: "Trust and safety", description: "How bookings are handled, how professionals are listed, and how your information is protected.", alternates: { canonical: "/trust-and-safety" } };
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 const POINTS = [
   { t: "One office handles every booking", d: "You always know who to call. The office confirms the time and price with you, and is your contact if anything changes." },

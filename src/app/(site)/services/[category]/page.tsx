@@ -8,7 +8,8 @@ import { ProCardSkeleton, ProGrid } from "@/components/site/pro-card";
 import { tradeBySlug, tradesOf } from "@/lib/trades";
 import { getPublicPros, getPublicSettings } from "@/server/public";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
+export function generateStaticParams() { return []; } // pages are built on the first visit, then cached and refreshed in the background
 export const dynamicParams = true;
 
 export async function generateMetadata({ params }: { params: { category: string } }): Promise<Metadata> {

@@ -4,7 +4,7 @@ import { ContactCta, PageHero } from "@/components/site/page-parts";
 import { getPublicSettings } from "@/server/public";
 
 export const metadata: Metadata = { title: "How it works", description: "Choose a trade, message the office, and we confirm the time and price before work starts. One point of contact from first call to finished job.", alternates: { canonical: "/how-it-works" } };
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 const STEPS = [
   { t: "Choose a trade", d: "Browse plumbers, carpenters, masons, electricians and painters. Each profile shows experience, qualifications, ratings and the area they are based in. Allow your location, or pick an area, to see who is nearest." },

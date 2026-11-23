@@ -4,7 +4,7 @@ import { SiteFooter } from "@/components/site/footer";
 import { Analytics } from "@/components/site/analytics";
 import { getPublicPros, getPublicSettings } from "@/server/public";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 // Shared chrome for every public page. Data comes from the public read model only.
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {

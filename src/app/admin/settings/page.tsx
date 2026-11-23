@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Eye, EyeOff, Plus, Trash2 } from "lucide-react";
+import { Download, Eye, EyeOff, Plus, Trash2 } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/field";
@@ -141,6 +141,12 @@ export default function SettingsPage() {
             <Button onClick={saveTrades} disabled={savingTrades || !tradesDirty}>{savingTrades ? "Saving…" : "Save trades"}</Button>
             {tradesDirty && <button type="button" onClick={() => setDraft(saved)} className="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline">Discard changes</button>}
           </div>
+        </section>
+
+        <section className={cn(card, "space-y-3")} aria-labelledby="backup-h">
+          <h2 id="backup-h" className="text-lg font-semibold">Data backup</h2>
+          <p className="text-sm text-muted-foreground">Download a complete copy of your workers, customers, work orders and ratings. Keep it somewhere safe. Nothing is ever deleted from the system, but a copy of your own is good practice.</p>
+          <a href="/api/db/export" download className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-background px-5 text-[15px] font-medium hover:bg-muted"><Download className="h-4 w-4" aria-hidden /> Download backup</a>
         </section>
 
         <section className={cn(card, "space-y-4")} aria-labelledby="pw-h">

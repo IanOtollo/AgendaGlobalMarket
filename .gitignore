@@ -6,3 +6,4 @@ data/db.json
 *.log
 data/uploads/
 .next-build
+.next-test

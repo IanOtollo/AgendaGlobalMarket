@@ -4,6 +4,7 @@ import { Plus } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { Pagination, usePaged } from "@/components/ui/pagination";
 import { Field, Input } from "@/components/ui/field";
 import { PageHeader } from "@/components/layout/admin-shell";
 
@@ -16,6 +17,7 @@ export default function Customers() {
   useEffect(() => setQ(new URLSearchParams(window.location.search).get("q") ?? ""), []);
   const t = q.trim().toLowerCase();
   const rows = customers.filter((c) => !t || [c.name, c.phone, c.address].some((s) => s?.toLowerCase().includes(t)));
+  const paged = usePaged(rows, 20, q);
 
   return (
     <>
@@ -29,7 +31,7 @@ export default function Customers() {
           </thead>
           <tbody className="divide-y divide-border">
             {!rows.length && <tr><td colSpan={4} className="px-6 py-10 text-center text-muted-foreground">No customers match.</td></tr>}
-            {rows.map((c) => (
+            {paged.items.map((c) => (
               <tr key={c.id}>
                 <td className="px-6 py-4 font-medium">{c.name}</td>
                 <td className="px-6 py-4">{c.phone}</td>
@@ -39,6 +41,7 @@ export default function Customers() {
             ))}
           </tbody>
         </table>
+        <Pagination {...paged} />
       </div>
       <Modal open={open} onClose={() => setOpen(false)} title="Add customer">
         <div className="space-y-4">

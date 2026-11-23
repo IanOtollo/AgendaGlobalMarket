@@ -9,7 +9,8 @@ import { JsonLd, breadcrumbLd, proLd } from "@/lib/schema";
 import { categorySlug } from "@/lib/trades";
 import { getPublicPros, getPublicSettings } from "@/server/public";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
+export function generateStaticParams() { return []; } // pages are built on the first visit, then cached and refreshed in the background
 
 const find = async (slug: string) => (await getPublicPros()).find((p) => p.slug === slug);
 const month = (m: string) => new Date(`${m}-01T00:00:00`).toLocaleDateString("en-GB", { month: "long", year: "numeric" });

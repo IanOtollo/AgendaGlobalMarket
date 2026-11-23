@@ -54,11 +54,18 @@ export function SiteProviders({ pros, settings, children }: SiteData & { childre
   const [heroSearchVisible, setHeroSearchVisible] = useState(false);
   const watchdog = useRef<ReturnType<typeof setTimeout>>();
 
-  // Live updates: the public stream carries only the public model.
+  // Fresh data without a connection per visitor: ask again every minute while the tab is visible (the answer is cached
+  // for 30 seconds, so many visitors cost the database almost nothing). The page itself arrives already up to date.
   useEffect(() => {
-    const es = new EventSource("/api/public/stream");
-    es.onmessage = (e) => { try { setData(JSON.parse(e.data)); } catch {} };
-    return () => es.close();
+    let live = true;
+    const pull = async () => {
+      if (document.visibilityState !== "visible") return;
+      try { const r = await fetch("/api/public/data"); if (r.ok && live) setData(await r.json()); } catch { /* keep what we have */ }
+    };
+    const timer = setInterval(pull, 60_000);
+    const onVisible = () => { if (document.visibilityState === "visible") void pull(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => { live = false; clearInterval(timer); document.removeEventListener("visibilitychange", onVisible); };
   }, []);
 
   const persist = useCallback((c: { lat: number; lng: number }, slug: string, source: "gps" | "manual", r: number, rec: string[]) => {

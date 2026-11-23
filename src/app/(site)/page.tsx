@@ -8,7 +8,7 @@ import { JsonLd, faqLd, organizationLd, websiteLd } from "@/lib/schema";
 import { FAQ_HOME } from "@/lib/faq";
 import { getPublicSettings } from "@/server/public";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export default async function HomePage() {

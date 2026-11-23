@@ -6,6 +6,7 @@ import { Plus, Search } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Pagination, usePaged } from "@/components/ui/pagination";
 import { PageHeader } from "@/components/layout/admin-shell";
 import { payStatus, totalOf } from "@/lib/billing";
 import { STATUS_LABEL } from "@/lib/config";
@@ -32,6 +33,7 @@ export default function WorkOrders() {
   };
   const count = (s: "all" | WOStatus) => workOrders.filter((w) => (s === "all" ? w.status !== "cancelled" : w.status === s) && matches(w)).length;
   const rows = workOrders.filter((w) => (tab === "all" ? w.status !== "cancelled" : w.status === tab) && matches(w));
+  const paged = usePaged(rows, 15, `${tab}|${q}`);
 
   return (
     <>
@@ -58,7 +60,7 @@ export default function WorkOrders() {
 
         {/* Phones: one stacked row per job */}
         <ul className="divide-y divide-border md:hidden">
-          {rows.map((w) => {
+          {paged.items.map((w) => {
             const customer = customers.find((c) => c.id === w.customerId);
             const provider = providers.find((p) => p.id === w.providerId);
             return (
@@ -90,7 +92,7 @@ export default function WorkOrders() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {rows.map((w) => {
+              {paged.items.map((w) => {
                 const customer = customers.find((c) => c.id === w.customerId);
                 const provider = providers.find((p) => p.id === w.providerId);
                 return (
@@ -113,6 +115,7 @@ export default function WorkOrders() {
             </tbody>
           </table>
         </div>
+        <Pagination {...paged} />
       </div>
     </>
   );

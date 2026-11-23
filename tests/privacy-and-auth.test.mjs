@@ -79,19 +79,20 @@ test("home page HTML is built from the public model only (no demo/seed leftovers
   }
 });
 
-test("public live stream carries only whitelisted fields", async () => {
-  const ctl = new AbortController();
-  const res = await http("/api/public/stream", { signal: ctl.signal });
+test("public data endpoint carries only whitelisted fields and is cacheable", async () => {
+  const res = await http("/api/public/data");
   assert.equal(res.status, 200);
-  const reader = res.body.getReader();
-  let text = "";
-  const deadline = Date.now() + 8000;
-  while (!text.includes("\n\n") && Date.now() < deadline) text += new TextDecoder().decode((await reader.read()).value ?? new Uint8Array());
-  ctl.abort();
-  assertClean("public stream", text);
-  const data = JSON.parse(text.split("\n").find((l) => l.startsWith("data: ")).slice(6));
-  assert.deepEqual(Object.keys(data.settings).sort(), ["adminPhone", "businessName"]);
+  assert.match(res.headers.get("cache-control") ?? "", /s-maxage=30/);
+  const text = await res.text();
+  assertClean("public data", text);
+  const data = JSON.parse(text);
+  assert.deepEqual(Object.keys(data.settings).sort(), ["adminPhone", "businessName", "trades"]);
   for (const p of data.pros) for (const k of Object.keys(p)) assert.ok(PUBLIC_KEYS.has(k), `public pro has non-whitelisted field "${k}"`);
+});
+
+test("the old public stream is gone and no whole-database write exists", async () => {
+  assert.equal((await http("/api/public/stream")).status, 404);
+  assert.ok([401, 405].includes((await http("/api/db", { method: "PUT", headers: { cookie, "Content-Type": "application/json", Origin: ORIGIN }, body: "{}" })).status));
 });
 
 test("public rating API reveals nothing beyond provider name and job title", async () => {
@@ -112,7 +113,7 @@ test("rating submissions are validated and same-origin only", async () => {
 
 test("private data API and live stream reject anonymous requests", async () => {
   assert.equal((await http("/api/db")).status, 401);
-  assert.equal((await http("/api/db", { method: "PUT", headers: { "Content-Type": "application/json", Origin: ORIGIN }, body: "{}" })).status, 401);
+  assert.equal((await http("/api/db", { method: "PATCH", headers: { "Content-Type": "application/json", Origin: ORIGIN }, body: "{}" })).status, 401);
   assert.equal((await http("/api/db/stream")).status, 401);
 });
 
@@ -145,6 +146,6 @@ test("signed-in admin can read data; writes need a same-origin request and a val
   const read = await http("/api/db", { headers: { cookie } });
   assert.equal(read.status, 200);
   assert.ok(Array.isArray((await read.json()).providers));
-  assert.equal((await http("/api/db", { method: "PUT", headers: { cookie, "Content-Type": "application/json", Origin: "https://evil.example" }, body: "{}" })).status, 403);
-  assert.equal((await http("/api/db", { method: "PUT", headers: { cookie, "Content-Type": "application/json", Origin: ORIGIN }, body: JSON.stringify({ db: { nope: true } }) })).status, 400);
+  assert.equal((await http("/api/db", { method: "PATCH", headers: { cookie, "Content-Type": "application/json", Origin: "https://evil.example" }, body: "{}" })).status, 403);
+  assert.equal((await http("/api/db", { method: "PATCH", headers: { cookie, "Content-Type": "application/json", Origin: ORIGIN }, body: JSON.stringify({ upserts: [{ coll: "nope", rid: "x", data: { id: "x" } }] }) })).status, 400);
 });

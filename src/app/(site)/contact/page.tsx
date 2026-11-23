@@ -9,7 +9,7 @@ import { waUrl } from "@/lib/contact";
 import { getPublicSettings } from "@/server/public";
 
 export const metadata: Metadata = { title: "Contact us", description: "Call or WhatsApp the office to book a professional, ask a question or report a problem.", alternates: { canonical: "/contact" } };
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 const REASONS = [
   ["Book a professional", "Hi, I'd like to book a professional."],

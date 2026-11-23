@@ -6,7 +6,7 @@ import { JsonLd, faqLd } from "@/lib/schema";
 import { getPublicSettings } from "@/server/public";
 
 export const metadata: Metadata = { title: "Help centre", description: "Answers about booking, prices, cancellations, ratings, your location and joining as a professional.", alternates: { canonical: "/help" } };
-export const dynamic = "force-dynamic";
+export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 export default async function Page() {
   const { adminPhone } = await getPublicSettings();
