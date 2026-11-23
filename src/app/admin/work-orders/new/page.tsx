@@ -22,7 +22,11 @@ const blank = {
 export default function NewWorkOrderPage() {
   const router = useRouter();
   const { customers, providers, workOrders, addCustomer, addWorkOrder } = useStore();
-  const [f, setF] = useState(blank);
+  // /admin/work-orders/new?date=YYYY-MM-DD (from the calendar) pre-fills the day.
+  const [f, setF] = useState(() => {
+    const d = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("date") ?? "" : "";
+    return { ...blank, date: /^d{4}-d{2}-d{2}$/.test(d) ? d : "" };
+  });
   const set = (k: keyof typeof blank) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setF((s) => ({ ...s, [k]: e.target.value }));
 

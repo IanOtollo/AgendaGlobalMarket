@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/layout/admin-shell";
 import { slot } from "@/lib/schedule";
 import { isWorking } from "@/lib/team";
 import { cn } from "@/lib/utils";
+import { MonthCalendar } from "@/components/admin/month-calendar";
 
 const iso = (d: Date) => {
   const x = new Date(d);
@@ -21,6 +22,7 @@ const tone = {
 export default function Schedule() {
   const { workOrders, providers, customers } = useStore();
   const [offset, setOffset] = useState(0);
+  const [view, setView] = useState<"month" | "week">("month");
 
   const days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
@@ -32,13 +34,23 @@ export default function Schedule() {
   return (
     <>
       <PageHeader title="Team schedule" action={
+        <div role="tablist" aria-label="Calendar view" className="inline-flex rounded-lg border border-border bg-card p-0.5">
+          {(["month", "week"] as const).map((v) => (
+            <button key={v} role="tab" aria-selected={view === v} onClick={() => setView(v)}
+              className={cn("min-h-9 rounded-md px-3 text-sm font-medium capitalize transition-colors", view === v ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}>{v}</button>
+          ))}
+        </div>
+      } />
+      {view === "month" ? <MonthCalendar /> : (
+      <>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">Every team member&apos;s week at a glance. Empty cells are free, so book from there.</p>
         <div className="flex gap-2">
           <Button variant="secondary" size="sm" onClick={() => setOffset(offset - 1)} aria-label="Previous week"><ChevronLeft className="h-4 w-4" /></Button>
           <Button variant="secondary" size="sm" onClick={() => setOffset(0)}>Today</Button>
           <Button variant="secondary" size="sm" onClick={() => setOffset(offset + 1)} aria-label="Next week"><ChevronRight className="h-4 w-4" /></Button>
         </div>
-      } />
-      <p className="mb-6 text-sm text-muted-foreground">Every provider&apos;s week at a glance. Empty cells are free, so book from there.</p>
+      </div>
 
       <div className="overflow-x-auto rounded-lg border border-border/50 bg-card">
         <table className="w-full min-w-[56rem] table-fixed text-left text-sm">
@@ -86,6 +98,8 @@ export default function Schedule() {
             {unassigned.map((w) => <li key={w.id}>{w.no} · {w.title} · {w.date} {slot(w)}</li>)}
           </ul>
         </div>
+      )}
+      </>
       )}
     </>
   );
