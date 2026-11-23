@@ -81,6 +81,12 @@ export default function SettingsPage() {
   });
   const tradesBad = errors.some(Boolean);
 
+  // Asks straight away when a saved trade is removed. The removal still only takes effect once Save trades is pressed.
+  const removeTrade = async (t: Trade, wasSaved: boolean) => {
+    if (wasSaved && !(await confirm({ title: `Remove ${t.name || "this trade"}?`, body: "It disappears from the website menus, filters and forms once you press Save trades. Nothing changes until then.", confirmLabel: "Remove trade", danger: true }))) return;
+    setDraft((d) => d.filter((x) => x.id !== t.id));
+  };
+
   const saveTrades = async () => {
     if (tradesBad) return toast("error", "Fix the highlighted trades first");
     // A saved trade keeps its icon; only a new trade can choose one.
@@ -89,7 +95,7 @@ export default function SettingsPage() {
     saved.forEach((o) => { const n = clean.find((t) => t.id === o.id); if (n && n.name !== o.name) renames[o.name] = n.name; });
     const removed = saved.filter((o) => !clean.some((t) => t.id === o.id)).map((o) => o.name);
     const affected = Object.keys(renames).reduce((n, old) => n + useOfTrade(old).workers + useOfTrade(old).jobs, 0);
-    if ((removed.length || Object.keys(renames).length) && !(await confirm({
+    if (Object.keys(renames).length && !(await confirm({
       title: "Save these trade changes?",
       body: [Object.keys(renames).length ? `${Object.entries(renames).map(([a, b]) => `${a} becomes ${b}`).join(", ")}. ${affected} existing workers and work orders are carried over.` : "", removed.length ? `Removed: ${removed.join(", ")}.` : "", "The website menus update straight away."].filter(Boolean).join(" "),
       confirmLabel: "Save trades", danger: removed.length > 0,
@@ -117,13 +123,18 @@ export default function SettingsPage() {
   });
   const areasBad = areaErrors.some(Boolean);
 
+  const removeArea = async (a: AreaRow) => {
+    if (a.origName && !(await confirm({ title: `Remove ${a.name || "this area"}?`, body: "It disappears from the area lists and the map once you press Save areas. Nothing changes until then.", confirmLabel: "Remove area", danger: true }))) return;
+    setAreas((l) => l.filter((x) => x.key !== a.key));
+  };
+
   const saveAreas = async () => {
     if (areasBad) return toast("error", "Fix the highlighted areas first");
     const extra: ServiceArea[] = areas.map((a) => { const p = parsePin(a.loc)!; return { name: a.name.trim(), slug: slugify(a.name), lat: p.lat, lng: p.lng }; });
     const renames: Record<string, string> = {};
     areas.forEach((a) => { if (a.origName && a.origName !== a.name.trim()) renames[a.origName] = a.name.trim(); });
     const removed = savedAreas.filter((o) => !areas.some((a) => a.key === o.key)).map((o) => o.name);
-    if ((removed.length || Object.keys(renames).length) && !(await confirm({
+    if (Object.keys(renames).length && !(await confirm({
       title: "Save these area changes?",
       body: [Object.keys(renames).length ? `${Object.entries(renames).map(([a, b]) => `${a} becomes ${b}`).join(", ")}. Workers and work orders in them are carried over.` : "", removed.length ? `Removed: ${removed.join(", ")}.` : "", "The website's area lists and map update straight away."].filter(Boolean).join(" "),
       confirmLabel: "Save areas", danger: removed.length > 0,
@@ -206,7 +217,7 @@ export default function SettingsPage() {
                         className={cn(iconBtn, "border border-border bg-background hover:bg-muted")}><Icon className="h-5 w-5" aria-hidden /></button>
                       <div className="min-w-[9rem] flex-1"><Input value={t.name} onChange={(e) => patch(t.id, { name: e.target.value })} placeholder="Trade name" aria-label="Trade name" /></div>
                       <div className="min-w-[9rem] flex-1"><Input value={t.noun} onChange={(e) => patch(t.id, { noun: e.target.value })} placeholder="People are called, e.g. Plumbers" aria-label="People are called" /></div>
-                      <button type="button" disabled={inUse || draft.length === 1} onClick={() => setDraft((d) => d.filter((x) => x.id !== t.id))}
+                      <button type="button" disabled={inUse || draft.length === 1} onClick={() => removeTrade(t, isSaved)}
                         aria-label={`Remove ${t.name || "trade"}`} title={inUse ? "In use: reassign its workers and jobs first" : draft.length === 1 ? "Keep at least one trade" : "Remove"} className={removeBtn}><Trash2 className="h-4 w-4" aria-hidden /></button>
                     </div>
                     {open === t.id && (
@@ -249,7 +260,7 @@ export default function SettingsPage() {
                     <div className="flex flex-wrap items-center gap-2.5">
                       <div className="min-w-[9rem] flex-1"><Input value={a.name} onChange={(e) => setAreas((l) => l.map((x) => (x.key === a.key ? { ...x, name: e.target.value } : x)))} placeholder="Area name" aria-label="Area name" /></div>
                       <div className="min-w-[12rem] flex-[1.4]"><Input value={a.loc} onChange={(e) => setAreas((l) => l.map((x) => (x.key === a.key ? { ...x, loc: e.target.value } : x)))} placeholder="Google Maps link or -1.2921, 36.8219" aria-label="Location" aria-invalid={!pin} /></div>
-                      <button type="button" disabled={inUse} onClick={() => setAreas((l) => l.filter((x) => x.key !== a.key))} aria-label={`Remove ${a.name || "area"}`} title={inUse ? "In use: reassign its workers and jobs first" : "Remove"} className={removeBtn}><Trash2 className="h-4 w-4" aria-hidden /></button>
+                      <button type="button" disabled={inUse} onClick={() => removeArea(a)} aria-label={`Remove ${a.name || "area"}`} title={inUse ? "In use: reassign its workers and jobs first" : "Remove"} className={removeBtn}><Trash2 className="h-4 w-4" aria-hidden /></button>
                     </div>
                     {pin && !areaErrors[i] && <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground"><MapPin className="h-3.5 w-3.5" aria-hidden />Pinned at {pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</p>}
                     {areaErrors[i] && (a.name || a.loc) && <p role="alert" className="mt-2 text-xs text-destructive">{areaErrors[i]}</p>}
