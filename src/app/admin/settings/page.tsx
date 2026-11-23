@@ -164,13 +164,13 @@ export default function SettingsPage() {
         <div className="space-y-6">
           <section className={cn(card, "space-y-4")} aria-labelledby="biz-h">
             <h2 id="biz-h" className="text-lg font-semibold">Business</h2>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid items-start gap-4 md:grid-cols-2">
               <Field label="Business name"><Input value={f.businessName} onChange={(e) => setF({ ...f, businessName: e.target.value })} /></Field>
-              <Field label="Admin phone (the only number shown to clients)">
+              <Field label="Admin phone">
                 <Input value={f.adminPhone} onChange={(e) => setF({ ...f, adminPhone: e.target.value })} inputMode="tel" placeholder="+254700000000" aria-invalid={phoneBad} />
               </Field>
             </div>
-            <p className={cn("text-xs", phoneBad ? "text-destructive" : "text-muted-foreground")}>{phoneBad ? "That does not look like a phone number. Include the country code." : "Used for every Call and WhatsApp button. Include the country code."}</p>
+            <p className={cn("text-xs", phoneBad ? "text-destructive" : "text-muted-foreground")}>{phoneBad ? "That does not look like a phone number. Include the country code." : "The only number shown to clients, used for every Call and WhatsApp button. Include the country code."}</p>
             <Button onClick={saveBusiness} disabled={savingBiz || !bizDirty}>{savingBiz ? "Saving…" : "Save changes"}</Button>
           </section>
 
