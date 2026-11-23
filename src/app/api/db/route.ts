@@ -12,7 +12,7 @@ const noStore = { "Cache-Control": "no-store" };
 // Private business data: admin session required for every method.
 export async function GET() {
   if (!(await getAdmin())) return unauthorized();
-  return NextResponse.json(getDb(), { headers: noStore });
+  return NextResponse.json(await getDb(), { headers: noStore });
 }
 
 export async function PUT(req: Request) {
@@ -27,6 +27,6 @@ export async function PUT(req: Request) {
   if (!db || !Array.isArray(db.workOrders) || !Array.isArray(db.providers) || !Array.isArray(db.customers) || !Array.isArray(db.ratings)) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400, headers: noStore });
   }
-  setDb(db, typeof by === "string" ? by.slice(0, 64) : "admin");
+  await setDb(db, typeof by === "string" ? by.slice(0, 64) : "admin");
   return NextResponse.json({ ok: true }, { headers: noStore });
 }

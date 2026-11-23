@@ -8,8 +8,8 @@ import { getPublicSettings } from "@/server/public";
 export const metadata: Metadata = { title: "Help centre", description: "Answers about booking, prices, cancellations, ratings, your location and joining as a professional.", alternates: { canonical: "/help" } };
 export const dynamic = "force-dynamic";
 
-export default function Page() {
-  const { adminPhone } = getPublicSettings();
+export default async function Page() {
+  const { adminPhone } = await getPublicSettings();
   const all = FAQ_HELP.flatMap((g) => g.items);
   return (
     <>

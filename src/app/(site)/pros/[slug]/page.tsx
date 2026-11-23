@@ -11,11 +11,11 @@ import { getPublicPros, getPublicSettings } from "@/server/public";
 
 export const dynamic = "force-dynamic";
 
-const find = (slug: string) => getPublicPros().find((p) => p.slug === slug);
+const find = async (slug: string) => (await getPublicPros()).find((p) => p.slug === slug);
 const month = (m: string) => new Date(`${m}-01T00:00:00`).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const p = find(params.slug);
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const p = await find(params.slug);
   if (!p) return { title: "Professional not found" };
   const rating = p.rating.count ? ` Rated ${p.rating.avg.toFixed(1)} out of 5 from ${p.rating.count} ${p.rating.count === 1 ? "review" : "reviews"}.` : "";
   return {
@@ -34,10 +34,10 @@ function Section({ id, title, children }: { id: string; title: string; children:
   );
 }
 
-export default function ProPage({ params }: { params: { slug: string } }) {
-  const pro = find(params.slug);
+export default async function ProPage({ params }: { params: { slug: string } }) {
+  const pro = await find(params.slug);
   if (!pro) notFound();
-  const { adminPhone } = getPublicSettings();
+  const { adminPhone } = await getPublicSettings();
   const crumbs = [{ label: "Home", href: "/" }, { label: "Services", href: "/services" }, { label: pro.category, href: `/services/${categorySlug(pro.category)}` }, { label: pro.name }];
   const hasReviews = pro.rating.count > 0;
   const anchors = [["about", "About"], ...(pro.fromPrice != null ? [["pricing", "Pricing"]] : []), ...(pro.qualifications.length ? [["credentials", "Credentials"]] : []), ...(hasReviews ? [["reviews", "Reviews"]] : []), ["area", "Service area"]];

@@ -13,8 +13,8 @@ export const metadata: Metadata = {
 };
 export const dynamic = "force-dynamic";
 
-export default function ServicesPage() {
-  const total = getPublicPros().length;
+export default async function ServicesPage() {
+  const total = (await getPublicPros()).length;
   return (
     <>
       <Section className="!pb-8 !pt-8 md:!pt-12">

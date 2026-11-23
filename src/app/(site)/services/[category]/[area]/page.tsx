@@ -15,11 +15,11 @@ export const dynamic = "force-dynamic";
 
 const NEAR_KM = 15;
 
-function data(categorySlug: string, areaSlug: string) {
+async function data(categorySlug: string, areaSlug: string) {
   const category = categoryBySlug(categorySlug);
   const area = AREA_BY_SLUG[areaSlug];
   if (!category || !area) return null;
-  const pros = getPublicPros().filter((p) => p.category === category.name)
+  const pros = (await getPublicPros()).filter((p) => p.category === category.name)
     .map((p) => ({ p, km: distanceKm(area, p) })).sort((a, b) => a.km - b.km || b.p.rating.avg - a.p.rating.avg);
   const near = pros.filter((x) => x.km <= NEAR_KM);
   const prices = near.map((x) => x.p.fromPrice).filter((n): n is number => typeof n === "number");
@@ -27,8 +27,8 @@ function data(categorySlug: string, areaSlug: string) {
   return { category, area, pros, near, avg: prices.length ? Math.round(prices.reduce((s, n) => s + n, 0) / prices.length) : null, nearbyAreas };
 }
 
-export function generateMetadata({ params }: { params: { category: string; area: string } }): Metadata {
-  const d = data(params.category, params.area);
+export async function generateMetadata({ params }: { params: { category: string; area: string } }): Promise<Metadata> {
+  const d = await data(params.category, params.area);
   if (!d) return {};
   const noun = TRADE_NOUN[d.category.name];
   const n = d.near.length;
@@ -41,8 +41,8 @@ export function generateMetadata({ params }: { params: { category: string; area:
   };
 }
 
-export default function AreaLanding({ params }: { params: { category: string; area: string } }) {
-  const d = data(params.category, params.area);
+export default async function AreaLanding({ params }: { params: { category: string; area: string } }) {
+  const d = await data(params.category, params.area);
   if (!d) notFound();
   const { category, area, near, avg, nearbyAreas } = d;
   const noun = TRADE_NOUN[category.name];

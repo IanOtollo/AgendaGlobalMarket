@@ -7,9 +7,9 @@ import { getPublicPros, getPublicSettings } from "@/server/public";
 export const dynamic = "force-dynamic";
 
 // Shared chrome for every public page. Data comes from the public read model only.
-export default function SiteLayout({ children }: { children: React.ReactNode }) {
-  const pros = getPublicPros();
-  const settings = getPublicSettings();
+export default async function SiteLayout({ children }: { children: React.ReactNode }) {
+  const pros = await getPublicPros();
+  const settings = await getPublicSettings();
   return (
     <SiteProviders pros={pros} settings={settings}>
       <div className="site flex min-h-screen flex-col bg-background text-foreground">

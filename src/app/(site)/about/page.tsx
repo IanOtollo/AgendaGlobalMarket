@@ -8,8 +8,8 @@ import { getPublicSettings } from "@/server/public";
 export const metadata: Metadata = { title: "About us", description: `${BRAND.name} provides house and building maintenance in Nairobi, booked through one office.`, alternates: { canonical: "/about" } };
 export const dynamic = "force-dynamic";
 
-export default function Page() {
-  const { adminPhone } = getPublicSettings();
+export default async function Page() {
+  const { adminPhone } = await getPublicSettings();
   const l = SITE.legal;
   return (
     <>

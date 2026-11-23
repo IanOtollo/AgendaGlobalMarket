@@ -18,8 +18,8 @@ const REASONS = [
   ["Apply as a pro", "Hi, I'd like to apply as a pro."],
 ];
 
-export default function Page() {
-  const { adminPhone } = getPublicSettings();
+export default async function Page() {
+  const { adminPhone } = await getPublicSettings();
   return (
     <>
       <PageHero crumbs={[{ label: "Contact us" }]} title="Talk to the office" lead="Call or WhatsApp the same number for everything." />

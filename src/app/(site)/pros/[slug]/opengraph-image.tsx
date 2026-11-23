@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export default async function Image({ params }: { params: { slug: string } }) {
-  const p = getPublicPros().find((x) => x.slug === params.slug);
+  const p = (await getPublicPros()).find((x) => x.slug === params.slug);
   if (!p) return ogCard({ eyebrow: "Professional", title: "Agenda Global Market" });
   return ogCard({
     eyebrow: `${p.category} · ${p.area}, Nairobi`, title: p.name,

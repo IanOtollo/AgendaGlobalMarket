@@ -11,6 +11,6 @@ export const dynamic = "force-dynamic";
 export default async function Image({ params }: { params: { category: string } }) {
   const c = categoryBySlug(params.category);
   if (!c) return ogCard({ eyebrow: "Services", title: "Agenda Global Market" });
-  const n = getPublicPros().filter((p) => p.category === c.name).length;
+  const n = (await getPublicPros()).filter((p) => p.category === c.name).length;
   return ogCard({ eyebrow: "Nairobi", title: `${TRADE_NOUN[c.name]} you can book through one office`, lines: [`${n} ${n === 1 ? "professional" : "professionals"} listed`] });
 }

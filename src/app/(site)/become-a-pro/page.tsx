@@ -11,8 +11,8 @@ import { getPublicSettings } from "@/server/public";
 export const metadata: Metadata = { title: "Become a pro", description: "Join the Agenda Global Market network of plumbers, carpenters, masons, electricians and painters. We handle the bookings and scheduling.", alternates: { canonical: "/become-a-pro" } };
 export const dynamic = "force-dynamic";
 
-export default function Page() {
-  const { adminPhone } = getPublicSettings();
+export default async function Page() {
+  const { adminPhone } = await getPublicSettings();
   const apply = waUrl(adminPhone, "Hi, I'd like to apply as a pro.\nTrade:\nYears of experience:\nQualifications:\nArea I'm based in:");
   return (
     <>

@@ -7,9 +7,9 @@ import { getPublicPros } from "@/server/public";
 
 export const dynamic = "force-dynamic";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
-  const pros = getPublicPros();
+  const pros = await getPublicPros();
   const fixed = ["/", "/services", "/how-it-works", "/trust-and-safety", "/become-a-pro", "/about", "/contact", "/help", "/accessibility",
     "/legal/terms", "/legal/privacy", "/legal/cookies", "/legal/pro-agreement", "/legal/cancellation-refunds", "/legal/acceptable-use"];
   const urls: MetadataRoute.Sitemap = fixed.map((p) => ({ url: abs(p), lastModified: now, changeFrequency: p.startsWith("/legal") ? "yearly" : "monthly", priority: p === "/" ? 1 : 0.6 }));

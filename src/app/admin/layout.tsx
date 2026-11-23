@@ -13,7 +13,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const admin = await getAdmin();
   if (!admin) redirect("/login");
   return (
-    <StoreProvider initial={getDb()}>
+    <StoreProvider initial={await getDb()}>
       <AdminShell email={admin.sub}>{children}</AdminShell>
     </StoreProvider>
   );

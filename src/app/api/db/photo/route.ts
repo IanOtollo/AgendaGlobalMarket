@@ -4,6 +4,8 @@ import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { getAdmin, unauthorized } from "@/server/auth";
 import { sameOrigin } from "@/server/ratelimit";
+import { anyApi } from "convex/server";
+import { convexConfigured, convexHttp } from "@/server/db";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -31,6 +33,17 @@ export async function POST(req: Request) {
   const buf = Buffer.from(await file.arrayBuffer());
   const ext = sniff(buf);
   if (!ext) return NextResponse.json({ error: "Use a JPG, PNG or WebP photo" }, { status: 415, headers: noStore });
+  if (convexConfigured()) {
+    // Permanent storage in Convex: ask for a one-time upload URL, send the file, keep the returned id.
+    const mime = { jpg: "image/jpeg", png: "image/png", webp: "image/webp" }[ext];
+    try {
+      const uploadUrl = (await convexHttp().mutation(anyApi.db.generateUploadUrl, { secret: process.env.APP_SECRET as string })) as string;
+      const up = await fetch(uploadUrl, { method: "POST", headers: { "Content-Type": mime }, body: new Uint8Array(buf) });
+      const { storageId } = (await up.json()) as { storageId?: string };
+      if (!up.ok || !storageId) throw new Error("upload failed");
+      return NextResponse.json({ url: `/api/photo/${storageId}` }, { headers: noStore });
+    } catch { return NextResponse.json({ error: "Could not store the photo. Try again." }, { status: 502, headers: noStore }); }
+  }
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
   const name = `${randomBytes(12).toString("hex")}.${ext}`;
   fs.writeFileSync(path.join(UPLOAD_DIR, name), buf);

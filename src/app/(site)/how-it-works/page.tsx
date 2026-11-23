@@ -14,8 +14,8 @@ const STEPS = [
   { t: "You rate the job", d: "When the job is complete we send you a link to rate the professional. Only customers whose job was completed can leave a rating." },
 ];
 
-export default function Page() {
-  const { adminPhone } = getPublicSettings();
+export default async function Page() {
+  const { adminPhone } = await getPublicSettings();
   return (
     <>
       <PageHero crumbs={[{ label: "How it works" }]} title="One office, from first call to finished job" lead="Five clear steps, and one number to call at every one of them." />

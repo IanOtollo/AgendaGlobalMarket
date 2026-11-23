@@ -17,8 +17,8 @@ const POINTS = [
   { t: "Professionals never share their own numbers", d: "Contact goes through the office, so personal phone numbers stay private for customers and professionals alike." },
 ];
 
-export default function Page() {
-  const { adminPhone } = getPublicSettings();
+export default async function Page() {
+  const { adminPhone } = await getPublicSettings();
   return (
     <>
       <PageHero crumbs={[{ label: "Trust and safety" }]} title="How we keep bookings straightforward and safe" lead="What we do today, stated plainly." />

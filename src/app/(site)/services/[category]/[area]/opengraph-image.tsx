@@ -14,6 +14,6 @@ export default async function Image({ params }: { params: { category: string; ar
   const c = categoryBySlug(params.category);
   const a = AREA_BY_SLUG[params.area];
   if (!c || !a) return ogCard({ eyebrow: "Services", title: "Agenda Global Market" });
-  const n = getPublicPros().filter((p) => p.category === c.name && distanceKm(a, p) <= 15).length;
+  const n = (await getPublicPros()).filter((p) => p.category === c.name && distanceKm(a, p) <= 15).length;
   return ogCard({ eyebrow: "Nairobi", title: `${TRADE_NOUN[c.name]} in ${a.name}`, lines: [n ? `${n} ${n === 1 ? "professional" : "professionals"} within 15 km` : "Message the office and we will arrange one"] });
 }

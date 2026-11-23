@@ -16,8 +16,8 @@ const STEPS = [
   { n: "3", t: "We confirm the details", d: "Time and price are agreed before work starts." },
 ];
 
-export default function HomePage() {
-  const { adminPhone } = getPublicSettings();
+export default async function HomePage() {
+  const { adminPhone } = await getPublicSettings();
   return (
     <>
       <JsonLd data={organizationLd(adminPhone)} />

@@ -13,10 +13,10 @@ export const dynamicParams = true;
 
 export function generateStaticParams() { return CATEGORY_LIST.map((c) => ({ category: c.slug })); }
 
-export function generateMetadata({ params }: { params: { category: string } }): Metadata {
+export async function generateMetadata({ params }: { params: { category: string } }): Promise<Metadata> {
   const c = categoryBySlug(params.category);
   if (!c) return {};
-  const n = getPublicPros().filter((p) => p.category === c.name).length;
+  const n = (await getPublicPros()).filter((p) => p.category === c.name).length;
   return {
     title: `${c.name} professionals in Nairobi`,
     description: `${n} ${c.name.toLowerCase()} ${n === 1 ? "professional" : "professionals"} in Nairobi. ${c.blurb} Compare experience and ratings, then book through one office.`,
