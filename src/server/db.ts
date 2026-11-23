@@ -78,8 +78,8 @@ async function writeRemote(next: DB, prev: DB | null, by: string) {
 async function fetchRemote(): Promise<DB> {
   const r = (await convexHttp().query(anyApi.db.getAll, { secret: secret() })) as Remote;
   if (r.settings) { g.__by = r.by; return fromRemote(r); }
-  // First run against an empty Convex deployment: seed it.
-  const base = normalize(structuredClone(useSeed() ? seed : empty));
+  // First run against an empty Convex deployment: start empty. Demo data is never written to Convex.
+  const base = normalize(structuredClone(empty));
   await writeRemote(base, null, "server");
   return base;
 }
