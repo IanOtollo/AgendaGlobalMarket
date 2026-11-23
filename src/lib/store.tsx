@@ -16,7 +16,8 @@ type Ctx = DB & {
   addWorkOrder: (w: Omit<WorkOrder, "id" | "no" | "createdAt" | "status"> & { status?: WorkOrder["status"] }) => string;
   updateWorkOrder: (id: string, w: Partial<WorkOrder>) => void;
   addRating: (r: { workOrderId: string; providerId: string; stars: number; comment: string }) => void;
-  setSettings: (s: Settings) => void;
+  // Resolves true once the server has saved, false if it could not. `renames` (old trade name to new) carries existing records over.
+  setSettings: (s: Settings, renames?: Record<string, string>) => Promise<boolean>;
 };
 
 const StoreCtx = createContext<Ctx | null>(null);
@@ -47,14 +48,14 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
   }, []);
 
   // Apply locally right away, then send to the server which broadcasts to everyone else.
-  const upd = (f: (d: DB) => DB) => {
+  const upd = (f: (d: DB) => DB): Promise<boolean> => {
     const next = f(ref.current);
     ref.current = next;
     setDb(next);
-    fetch("/api/db", {
+    return fetch("/api/db", {
       method: "PUT", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ db: next, by: me.current }),
-    }).catch(() => {});
+    }).then((r) => r.ok).catch(() => false);
   };
 
   const value: Ctx = {
@@ -119,7 +120,15 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
           ? d
           : { ...d, ratings: [...d.ratings, { ...r, id: uid("rt"), createdAt: new Date().toISOString() }] },
       ),
-    setSettings: (settings) => upd((d) => ({ ...d, settings })),
+    setSettings: (settings, renames = {}) => {
+      const to = (c: string) => renames[c] ?? c;
+      return upd((d) => ({
+        ...d, settings,
+        providers: d.providers.map((p) => ({ ...p, category: to(p.category) })),
+        workOrders: d.workOrders.map((w) => ({ ...w, category: to(w.category) })),
+        requests: d.requests.map((r) => ({ ...r, category: to(r.category) })),
+      }));
+    },
   };
   return <StoreCtx.Provider value={value}>{children}</StoreCtx.Provider>;
 }

@@ -5,14 +5,16 @@ import { ButtonLink } from "@/components/ds/button";
 import { PageHero } from "@/components/site/page-parts";
 import { TrackedLink } from "@/components/site/tracked-link";
 import { waUrl } from "@/lib/contact";
-import { CATEGORY_LIST } from "@/lib/categories";
+import { tradesOf } from "@/lib/trades";
 import { getPublicSettings } from "@/server/public";
 
 export const metadata: Metadata = { title: "Become a pro", description: "Join the Agenda Global Market network of plumbers, carpenters, masons, electricians and painters. We handle the bookings and scheduling.", alternates: { canonical: "/become-a-pro" } };
 export const dynamic = "force-dynamic";
 
 export default async function Page() {
-  const { adminPhone } = await getPublicSettings();
+  const settings = await getPublicSettings();
+  const { adminPhone } = settings;
+  const CATEGORY_LIST = tradesOf(settings);
   const apply = waUrl(adminPhone, "Hi, I'd like to apply as a pro.\nTrade:\nYears of experience:\nQualifications:\nArea I'm based in:");
   return (
     <>

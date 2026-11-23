@@ -13,7 +13,7 @@ import type { DB } from "@/lib/types";
 // whitelist in src/server/public.ts.
 const FILE = path.join(process.cwd(), "data", "db.json");
 type Listener = (db: DB, by: string) => void;
-type G = { __db?: DB; __at?: number; __by?: string; __subs?: Set<Listener>; __live?: ConvexClient; __unsub?: () => void; __http?: ConvexHttpClient };
+type G = { __ver?: number; __db?: DB; __at?: number; __by?: string; __subs?: Set<Listener>; __live?: ConvexClient; __unsub?: () => void; __http?: ConvexHttpClient };
 const g = globalThis as unknown as G;
 
 const COLLS = ["providers", "customers", "requests", "workOrders", "ratings"] as const;
@@ -85,9 +85,11 @@ export async function getDb(): Promise<DB> {
   if (!convexConfigured()) return (g.__db ??= loadFile());
   // Fresh while a live subscription is open, otherwise reused for a moment so one page render makes one query.
   if (g.__db && (g.__live || Date.now() - (g.__at ?? 0) < 1500)) return g.__db;
-  g.__db = await fetchRemote();
-  g.__at = Date.now();
-  return g.__db;
+  // A write that lands while this read is in flight must not be overwritten by the older data we just fetched.
+  const ver = g.__ver ?? 0;
+  const fresh = await fetchRemote();
+  if ((g.__ver ?? 0) === ver) { g.__db = fresh; g.__at = Date.now(); return fresh; }
+  return g.__db ?? fresh;
 }
 
 /** Calls the listener on every data change, from this server or (with Convex) from any other. Returns an unsubscribe function. */
@@ -113,8 +115,10 @@ export async function setDb(input: DB, by: string) {
   const db = normalize(input);
   if (convexConfigured()) {
     const prev = await getDb();
+    g.__ver = (g.__ver ?? 0) + 1;
     await writeRemote(db, prev, by);
     g.__db = db; g.__at = Date.now();
+    g.__ver = (g.__ver ?? 0) + 1;
   } else {
     g.__db = db;
     try { fs.mkdirSync(path.dirname(FILE), { recursive: true }); fs.writeFileSync(FILE, JSON.stringify(db)); } catch {}

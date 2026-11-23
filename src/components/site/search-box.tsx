@@ -3,11 +3,11 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, MapPin, Search, User, Wrench } from "lucide-react";
 import { AREA_LIST } from "@/lib/areas";
-import { CATEGORY_LIST } from "@/lib/categories";
+import { iconOf } from "@/lib/trades";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ds/button";
-import { useLocation, useSiteData } from "./providers";
+import { useLocation, useSiteData, useTrades } from "./providers";
 
 type Opt = { id: string; group: "Recent" | "Services" | "Professionals" | "Areas"; label: string; sub?: string; href: string; icon: typeof Search };
 const RECENT_KEY = "agm-recent-searches";
@@ -18,6 +18,7 @@ const pushRecent = (q: string) => { try { localStorage.setItem(RECENT_KEY, JSON.
 export function SearchBox({ variant = "hero", className }: { variant?: "hero" | "compact"; className?: string }) {
   const router = useRouter();
   const { pros } = useSiteData();
+  const CATEGORY_LIST = useTrades();
   const loc = useLocation();
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
@@ -38,11 +39,11 @@ export function SearchBox({ variant = "hero", className }: { variant?: "hero" | 
     if (!t) {
       return [
         ...recent.map((r, i): Opt => ({ id: `r${i}`, group: "Recent", label: r, href: `/services?q=${encodeURIComponent(r)}`, icon: Clock })),
-        ...CATEGORY_LIST.slice(0, 5).map((c): Opt => ({ id: `c-${c.slug}`, group: "Services", label: c.name, href: `/services/${c.slug}`, icon: Wrench })),
+        ...CATEGORY_LIST.slice(0, 5).map((c): Opt => ({ id: `c-${c.slug}`, group: "Services", label: c.name, href: `/services/${c.slug}`, icon: iconOf(c.icon) })),
       ];
     }
     return [
-      ...CATEGORY_LIST.filter((c) => c.name.toLowerCase().includes(t)).map((c): Opt => ({ id: `c-${c.slug}`, group: "Services", label: c.name, sub: c.blurb, href: `/services/${c.slug}`, icon: Wrench })),
+      ...CATEGORY_LIST.filter((c) => c.name.toLowerCase().includes(t)).map((c): Opt => ({ id: `c-${c.slug}`, group: "Services", label: c.name, sub: c.blurb, href: `/services/${c.slug}`, icon: iconOf(c.icon) })),
       ...pros.filter((p) => [p.name, p.category, ...p.qualifications].some((s) => s.toLowerCase().includes(t))).slice(0, 5)
         .map((p): Opt => ({ id: `p-${p.slug}`, group: "Professionals", label: p.name, sub: `${p.category} · ${p.area}`, href: `/pros/${p.slug}`, icon: User })),
       ...AREA_LIST.filter((a) => a.name.toLowerCase().includes(t)).slice(0, 3).map((a): Opt => ({ id: `a-${a.slug}`, group: "Areas", label: a.name, sub: "Browse professionals in this area", href: `/services?area=${a.slug}`, icon: MapPin })),

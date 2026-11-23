@@ -4,6 +4,7 @@ import { AREA_BY_NAME } from "@/lib/areas";
 import { ratingOf } from "@/lib/rating";
 import { slugify } from "@/lib/slug";
 import { isBookable } from "@/lib/team";
+import { tradesOf } from "@/lib/trades";
 import type { PublicPro, PublicSettings } from "@/lib/types";
 
 // The ONLY data the public website receives. Every field is copied by name; nothing is spread, so a new
@@ -50,5 +51,5 @@ export async function getPublicSettings(): Promise<PublicSettings> {
 
 export function publicSettingsOf(db: DB): PublicSettings {
   const { businessName, adminPhone } = db.settings;
-  return { businessName, adminPhone };
+  return { businessName, adminPhone, trades: tradesOf(db.settings).map(({ slug: _slug, ...t }) => t) };
 }

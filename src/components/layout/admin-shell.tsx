@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { ProfileGlyph } from "@/components/site/profile-glyph";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -66,7 +67,7 @@ export function AdminShell({ children, email }: { children: React.ReactNode; ema
         </nav>
         <div className="hidden border-t border-primary-foreground/10 p-3 lg:block">
           <div className="flex items-center gap-3 rounded-md px-3 py-2">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-foreground/10 text-xs font-semibold">{(email || "A")[0].toUpperCase()}</span>
+            <span className="flex h-8 w-8 shrink-0 items-end justify-center overflow-hidden rounded-full bg-primary-foreground/10 text-primary-foreground/80"><ProfileGlyph className="h-7 w-7" /></span>
             <span className="min-w-0 flex-1 truncate text-sm text-primary-foreground/80">{email || "Admin"}</span>
             <form method="post" action="/api/auth/logout">
               <button type="submit" aria-label="Sign out" className="rounded-md p-1.5 text-primary-foreground/60 transition hover:bg-primary-foreground/10 hover:text-primary-foreground">

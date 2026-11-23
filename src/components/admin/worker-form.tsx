@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
-import { AREAS, CATEGORIES } from "@/lib/config";
+import { AREAS } from "@/lib/config";
+import { tradesOf } from "@/lib/trades";
+import { useStore } from "@/lib/store";
 import { slugify } from "@/lib/slug";
 import { parsePin } from "@/lib/pin";
 import { today } from "@/lib/utils";
@@ -14,8 +16,10 @@ export type WorkerData = Omit<Provider, "id">;
 const csv = (s: string) => s.split(",").map((x) => x.trim()).filter(Boolean);
 
 export function WorkerForm({ initial, submitLabel, onSubmit }: { initial?: Provider; submitLabel: string; onSubmit: (d: WorkerData) => void }) {
+  const { settings } = useStore();
+  const CATEGORIES = tradesOf(settings).map((t) => t.name);
   const [f, setF] = useState({
-    name: initial?.name ?? "", category: initial?.category ?? (CATEGORIES[0] as string), years: String(initial?.years ?? 1),
+    name: initial?.name ?? "", category: initial?.category ?? CATEGORIES[0], years: String(initial?.years ?? 1),
     phone: initial?.phone ?? "", email: initial?.email ?? "", idNumber: initial?.idNumber ?? "",
     joinedOn: initial?.joinedOn ?? today(), area: initial?.area ?? Object.keys(AREAS)[0],
     qualifications: initial?.qualifications.join(", ") ?? "", bio: initial?.bio ?? "",
@@ -65,7 +69,7 @@ export function WorkerForm({ initial, submitLabel, onSubmit }: { initial?: Provi
         <h3 className="text-sm font-semibold">Personal details <span className="font-normal text-muted-foreground">· private</span></h3>
         <Field label="Full name"><Input value={f.name} onChange={set("name")} /></Field>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Phone"><Input value={f.phone} onChange={set("phone")} inputMode="tel" placeholder="+254 7…" /></Field>
+          <Field label="Phone"><Input value={f.phone} onChange={set("phone")} inputMode="text" autoComplete="off" placeholder="Any format" /></Field>
           <Field label="Email (optional)"><Input type="email" value={f.email} onChange={set("email")} /></Field>
           <Field label="National ID (optional)"><Input value={f.idNumber} onChange={set("idNumber")} /></Field>
           <Field label="Date joined"><Input type="date" value={f.joinedOn} onChange={set("joinedOn")} /></Field>

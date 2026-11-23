@@ -3,7 +3,6 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MapPin, MessageCircle, SlidersHorizontal, X } from "lucide-react";
 import { AREA_BY_SLUG, AREA_LIST } from "@/lib/areas";
-import { CATEGORY_LIST } from "@/lib/categories";
 import { distanceKm } from "@/lib/geo";
 import { RADII } from "@/lib/location";
 import { track } from "@/lib/analytics";
@@ -273,4 +272,3 @@ export function BrowseView({ category, areaLock }: { category?: string; areaLock
   );
 }
 
-export { CATEGORY_LIST };

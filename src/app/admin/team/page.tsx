@@ -4,7 +4,7 @@ import { Plus, Search } from "lucide-react";
 import { useStore } from "@/lib/store";
 import { availability, isWorking } from "@/lib/team";
 import { ratingOf } from "@/lib/rating";
-import { CATEGORIES } from "@/lib/config";
+import { tradesOf } from "@/lib/trades";
 import { cn, fmtDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
@@ -14,7 +14,8 @@ import { WorkerDrawer } from "@/components/admin/worker-drawer";
 import { WorkerForm } from "@/components/admin/worker-form";
 
 export default function Team() {
-  const { providers, workOrders, ratings, addProvider } = useStore();
+  const { providers, workOrders, ratings, addProvider, settings } = useStore();
+  const CATEGORIES = tradesOf(settings).map((t) => t.name);
   const [trade, setTrade] = useState("All");
   const [q, setQ] = useState("");
   const [adding, setAdding] = useState(false);

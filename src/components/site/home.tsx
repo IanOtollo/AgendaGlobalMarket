@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, MapPin, MessageCircle, Star } from "lucide-react";
-import { CATEGORY_LIST, categoryBySlug } from "@/lib/categories";
+import { tradeBySlug } from "@/lib/trades";
 import { distanceKm } from "@/lib/geo";
 import { cn, digits } from "@/lib/utils";
 import { track } from "@/lib/analytics";
@@ -11,7 +11,7 @@ import { Button, ButtonLink } from "@/components/ds/button";
 import { Container, Highlight, Section } from "@/components/ds/primitives";
 import { CategoryRail } from "./category-rail";
 import { ProCard, ProGrid } from "./pro-card";
-import { useLocation, useSiteData, useSiteUi } from "./providers";
+import { useLocation, useSiteData, useSiteUi, useTrades } from "./providers";
 import { SearchBox } from "./search-box";
 import dynamic from "next/dynamic";
 
@@ -20,6 +20,7 @@ const HeroMap = dynamic(() => import("./hero-map").then((m) => m.HeroMap), { ssr
 
 export function HomeHero() {
   const loc = useLocation();
+  const CATEGORY_LIST = useTrades();
   const { setHeroSearchVisible } = useSiteUi();
   const searchWrap = useRef<HTMLDivElement>(null);
 
@@ -62,8 +63,9 @@ export function HomeResults() {
   const router = useRouter();
   const sp = useSearchParams();
   const { pros } = useSiteData();
+  const trades = useTrades();
   const loc = useLocation();
-  const trade = categoryBySlug(sp.get("trade") ?? "")?.name ?? null;
+  const trade = tradeBySlug(trades, sp.get("trade") ?? "")?.name ?? null;
 
   const rows = useMemo(() => {
     const list = pros.filter((p) => !trade || p.category === trade).map((p) => ({ p, km: loc.coords ? distanceKm(loc.coords, p) : null }));
@@ -72,11 +74,11 @@ export function HomeResults() {
 
   const select = (name: string | null) => {
     const next = new URLSearchParams(sp.toString());
-    const slug = name ? CATEGORY_LIST.find((c) => c.name === name)?.slug : null;
+    const slug = name ? trades.find((c) => c.name === name)?.slug : null;
     slug ? next.set("trade", slug) : next.delete("trade");
     router.replace(`/${next.size ? `?${next}` : ""}`, { scroll: false });
   };
-  const seeAll = trade ? `/services/${categoryBySlug(sp.get("trade") ?? "")?.slug}${loc.area ? `?area=${loc.area.slug}` : ""}` : `/services${loc.area ? `?area=${loc.area.slug}` : ""}`;
+  const seeAll = trade ? `/services/${tradeBySlug(trades, sp.get("trade") ?? "")?.slug}${loc.area ? `?area=${loc.area.slug}` : ""}` : `/services${loc.area ? `?area=${loc.area.slug}` : ""}`;
 
   return (
     <>

@@ -10,6 +10,8 @@ import { AREAS, JOB_TYPES, STATUS_LABEL } from "@/lib/config";
 import { DEFAULT_HOURS, findConflict } from "@/lib/schedule";
 import { cn, digits, fmtDate, money } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { useConfirm } from "@/components/ui/confirm";
+import { useToast } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
@@ -56,6 +58,14 @@ export default function WorkOrderPage() {
   const pay = PAY[payStatus(wo)];
   const log = (text: string) => [...(wo.activity ?? []), activity(text)];
   const patch = (p: Parameters<typeof updateWorkOrder>[1]) => updateWorkOrder(wo.id, p);
+  const confirm = useConfirm();
+  const toast = useToast();
+  const guarded = async (to: WOStatus) => {
+    if (to === "cancelled" && !(await confirm({ title: `Cancel ${wo.no}?`, body: "The booking is cancelled and the time is freed for others. You can reopen it later.", confirmLabel: "Cancel work order", cancelLabel: "Keep it", danger: true }))) return;
+    if (to === "completed" && !(await confirm({ title: `Mark ${wo.no} as completed?`, body: "The customer can then be sent the rating link and the job is invoiced as done.", confirmLabel: "Mark completed" }))) return;
+    advance(to);
+    toast("success", `${wo.no}: ${STATUS_LABEL[to]}`);
+  };
   const advance = (to: WOStatus) => patch({ status: to, activity: log(`Status changed to ${STATUS_LABEL[to]}`) });
 
   let next: { label: string; to: WOStatus; disabled: boolean; hint?: string } | null = null;
@@ -96,7 +106,7 @@ export default function WorkOrderPage() {
                 <FileText className="h-4 w-4" /> Invoice
               </Link>
             )}
-            {next && <Button disabled={next.disabled} onClick={() => advance(next!.to)}>{next.label}</Button>}
+            {next && <Button disabled={next.disabled} onClick={() => guarded(next!.to)}>{next.label}</Button>}
           </div>
         </div>
         <div className="border-t border-border px-5 py-4 sm:px-6">
@@ -212,7 +222,7 @@ export default function WorkOrderPage() {
               {wo.status === "cancelled" ? (
                 <Button variant="secondary" className="w-full" onClick={() => advance("new")}>Reopen work order</Button>
               ) : (
-                <Button variant="danger" className="w-full justify-start" onClick={() => advance("cancelled")}>Cancel work order</Button>
+                <Button variant="danger" className="w-full justify-start" onClick={() => guarded("cancelled")}>Cancel work order</Button>
               )}
             </Card>
           )}

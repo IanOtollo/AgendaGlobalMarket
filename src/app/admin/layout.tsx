@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { AdminShell } from "@/components/layout/admin-shell";
 import { StoreProvider } from "@/lib/store";
+import { ToastProvider } from "@/components/ui/toast";
+import { ConfirmProvider } from "@/components/ui/confirm";
 import { getAdmin } from "@/server/auth";
 import { getDb } from "@/server/db";
 
@@ -14,7 +16,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!admin) redirect("/login");
   return (
     <StoreProvider initial={await getDb()}>
-      <AdminShell email={admin.sub}>{children}</AdminShell>
+      <ToastProvider>
+        <ConfirmProvider>
+          <AdminShell email={admin.sub}>{children}</AdminShell>
+        </ConfirmProvider>
+      </ToastProvider>
     </StoreProvider>
   );
 }

@@ -27,6 +27,9 @@ export function MonthCalendar() {
   const [selected, setSelected] = useState<string | null>(null);
   const [who, setWho] = useState("");
   const todayIso = isoOf(new Date());
+  // How many appointments fit in a day box: measured from the real box height, so tall screens show more.
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState(2);
 
   const byDate = useMemo(() => {
     const m = new Map<string, WorkOrder[]>();
@@ -46,12 +49,22 @@ export function MonthCalendar() {
   const cells = Array.from({ length: rows * 7 }, (_, i) => new Date(month.getFullYear(), month.getMonth(), 1 - lead + i));
   const shift = (n: number) => setMonth(new Date(month.getFullYear(), month.getMonth() + n, 1));
   const live = (list: WorkOrder[]) => list.filter((w) => w.status !== "cancelled");
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el) return;
+    const measure = () => setFit(Math.max(1, Math.min(6, Math.floor((el.clientHeight / rows - 24 - 16 - 18) / 18))));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [rows]);
 
   const monthJobs = [...byDate.entries()].filter(([k]) => k.startsWith(`${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`)).reduce((n, [, v]) => n + live(v).length, 0);
 
   return (
-    <>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    // The whole month fits the screen: the grid takes the height that is left and its rows share it equally.
+    <div className="flex h-[calc(100dvh-22rem)] min-h-[26rem] flex-col lg:h-[calc(100dvh-13rem)]">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm" onClick={() => shift(-1)} aria-label="Previous month"><ChevronLeft className="h-4 w-4" /></Button>
           <Button variant="secondary" size="sm" onClick={() => { const d = new Date(); setMonth(new Date(d.getFullYear(), d.getMonth(), 1)); }}>Today</Button>
@@ -67,11 +80,11 @@ export function MonthCalendar() {
         </div>
       </div>
 
-      <div className="mt-4 rounded-xl border border-border/60 bg-card p-2 sm:p-3">
-        <div className="grid grid-cols-7 gap-1 pb-1 text-center text-xs font-medium text-muted-foreground sm:gap-1.5">
+      <div className="mt-3 flex min-h-0 flex-1 flex-col rounded-xl border border-border/60 bg-card p-2 sm:p-3">
+        <div className="grid shrink-0 grid-cols-7 gap-1 pb-1 text-center text-xs font-medium text-muted-foreground sm:gap-1.5">
           {WEEKDAYS.map((d) => <div key={d} className="py-1">{d}</div>)}
         </div>
-        <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
+        <div ref={gridRef} className="grid min-h-0 flex-1 grid-cols-7 gap-1 sm:gap-1.5" style={{ gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))` }}>
           {cells.map((d, idx) => {
             const key = isoOf(d);
             const inMonth = d.getMonth() === month.getMonth();
@@ -79,12 +92,12 @@ export function MonthCalendar() {
             const col = idx % 7, row = Math.floor(idx / 7);
             const label = `${d.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" })}: ${list.length ? `${list.length} ${list.length === 1 ? "appointment" : "appointments"}` : "no appointments"}`;
             return (
-              <div key={key} className="group relative">
+              <div key={key} className="group relative min-h-0">
                 <button type="button" onClick={() => setSelected(key)} aria-label={label}
-                  className={cn("flex min-h-[3.75rem] w-full flex-col rounded-lg border p-1.5 text-left transition-colors sm:min-h-[6rem] sm:p-2",
+                  className={cn("flex h-full min-h-0 w-full flex-col overflow-hidden rounded-lg border p-1.5 text-left transition-colors sm:p-2",
                     "border-border/50 hover:border-foreground/30 hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                     inMonth ? "bg-background" : "bg-muted/30 text-muted-foreground", key === selected && "border-foreground/50 bg-muted")}>
-                  <span className={cn("inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-xs font-semibold", key === todayIso && "bg-primary text-primary-foreground")}>{d.getDate()}</span>
+                  <span className={cn("inline-flex h-6 min-w-6 shrink-0 items-center justify-center self-start whitespace-nowrap rounded-full px-1.5 text-xs font-semibold", key === todayIso && "bg-primary text-primary-foreground")}>{d.getDate() === 1 ? d.toLocaleDateString(undefined, { day: "numeric", month: "short" }) : d.getDate()}</span>
                   {/* Phones: dots and a count. Larger screens: the first two appointments. */}
                   {list.length > 0 && (
                     <>
@@ -93,13 +106,13 @@ export function MonthCalendar() {
                         {list.length > 3 && <span className="text-[10px] font-medium">+{list.length - 3}</span>}
                       </span>
                       <span className="mt-1 hidden min-w-0 space-y-0.5 sm:block">
-                        {list.slice(0, 2).map((w) => (
-                          <span key={w.id} className="flex items-center gap-1.5 truncate text-xs">
+                        {list.slice(0, fit).map((w) => (
+                          <span key={w.id} className="flex items-center gap-1.5 truncate text-xs leading-[18px]">
                             <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", dot[w.status])} />
                             <span className="truncate"><span className="font-medium">{w.time ?? "Anytime"}</span> {w.title}</span>
                           </span>
                         ))}
-                        {list.length > 2 && <span className="block text-xs font-medium text-muted-foreground">+{list.length - 2} more</span>}
+                        {list.length > (fit) && <span className="block text-xs font-medium text-muted-foreground">+{list.length - (fit)} more</span>}
                       </span>
                     </>
                   )}
@@ -134,12 +147,12 @@ export function MonthCalendar() {
         </div>
       </div>
 
-      <ul className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground" aria-label="Legend">
+      <ul className="mt-2 flex shrink-0 flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground" aria-label="Legend">
         {(["new", "scheduled", "completed"] as const).map((s) => <li key={s} className="flex items-center gap-1.5"><span className={cn("h-2 w-2 rounded-full", dot[s])} />{s === "scheduled" ? "Scheduled / in progress" : STATUS_LABEL[s]}</li>)}
       </ul>
 
       <DayDrawer date={selected} jobs={selected ? byDate.get(selected) ?? [] : []} onClose={() => setSelected(null)} />
-    </>
+    </div>
   );
 }
 

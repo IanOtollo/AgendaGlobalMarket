@@ -7,15 +7,19 @@ import { ProfileGlyph } from "@/components/site/profile-glyph";
 import { availability, isWorking } from "@/lib/team";
 import { ratingOf } from "@/lib/rating";
 import { slot } from "@/lib/schedule";
-import { CATEGORY_ICONS } from "@/lib/icons";
+import { iconOf, tradesOf } from "@/lib/trades";
 import { cn, digits, ease, fmtDate, today } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import { Stars } from "@/components/ui/stars";
 import { WorkerForm } from "@/components/admin/worker-form";
+import { useConfirm } from "@/components/ui/confirm";
+import { useToast } from "@/components/ui/toast";
 
 export function WorkerDrawer({ id, onClose }: { id: string | null; onClose: () => void }) {
-  const { providers, workOrders, customers, ratings, updateProvider, offboardProvider, reinstateProvider } = useStore();
+  const { providers, workOrders, customers, ratings, updateProvider, offboardProvider, reinstateProvider, settings } = useStore();
+  const confirm = useConfirm();
+  const toast = useToast();
   const [mode, setMode] = useState<"view" | "edit" | "exit">("view");
   const [kind, setKind] = useState<"resigned" | "terminated">("resigned");
   const [leftOn, setLeftOn] = useState(today());
@@ -33,7 +37,7 @@ export function WorkerDrawer({ id, onClose }: { id: string | null; onClose: () =
   const reviews = ratings.filter((x) => x.providerId === p?.id && x.comment).slice(-3).reverse();
   const av = p ? availability(p.id, workOrders) : null;
   const working = p ? isWorking(p) : false;
-  const Icon = p ? CATEGORY_ICONS[p.category] : null;
+  const Icon = p ? iconOf(tradesOf(settings).find((t) => t.name === p.category)?.icon) : null;
 
   return (
     <AnimatePresence>
@@ -62,14 +66,17 @@ export function WorkerDrawer({ id, onClose }: { id: string | null; onClose: () =
 
             <div className="flex-1 space-y-6 overflow-y-auto p-6">
               {mode === "edit" ? (
-                <WorkerForm initial={p} submitLabel="Save changes" onSubmit={(d) => { updateProvider(p.id, d); setMode("view"); }} />
+                <WorkerForm initial={p} submitLabel="Save changes" onSubmit={async (d) => {
+                  if (!(await confirm({ title: `Save changes to ${p.name}?`, body: "This replaces their current details, and the website profile updates straight away.", confirmLabel: "Save changes" }))) return;
+                  updateProvider(p.id, d); setMode("view"); toast("success", "Worker updated", p.name);
+                }} />
               ) : (
                 <>
                   {!working && (
                     <section className="rounded-lg bg-destructive/10 p-4 text-sm">
                       <p className="font-semibold text-destructive">{p.employment === "terminated" ? "Let go" : "Resigned"} · {fmtDate(p.leftOn)}</p>
                       {p.leftReason && <p className="mt-1 text-foreground/80">{p.leftReason}</p>}
-                      <Button variant="secondary" size="sm" className="mt-3" onClick={() => reinstateProvider(p.id)}>Reinstate</Button>
+                      <Button variant="secondary" size="sm" className="mt-3" onClick={async () => { if (await confirm({ title: `Reinstate ${p.name}?`, body: "They return to the active team. They go back on the website once marked as listed.", confirmLabel: "Reinstate" })) { reinstateProvider(p.id); toast("success", "Reinstated", p.name); } }}>Reinstate</Button>
                     </section>
                   )}
 
@@ -150,7 +157,11 @@ export function WorkerDrawer({ id, onClose }: { id: string | null; onClose: () =
                       </p>
                       <div className="flex gap-2">
                         <Button variant="secondary" className="flex-1" onClick={() => setMode("view")}>Keep on staff</Button>
-                        <Button className="flex-1 bg-destructive text-background" onClick={() => { offboardProvider(p.id, kind, leftOn, reason.trim()); setMode("view"); }}>Confirm</Button>
+                        <Button className="flex-1 bg-destructive text-background" onClick={async () => {
+                          const verb = kind === "resigned" ? "resigned" : "let go";
+                          if (!(await confirm({ title: `Mark ${p.name} as ${verb}?`, body: "They come off the website and their open future jobs return to the queue. Their history is kept.", confirmLabel: kind === "resigned" ? "Mark as resigned" : "Let go", danger: true }))) return;
+                          offboardProvider(p.id, kind, leftOn, reason.trim()); setMode("view"); toast("success", `${p.name} marked as ${verb}`);
+                        }}>Confirm</Button>
                       </div>
                     </section>
                   )}

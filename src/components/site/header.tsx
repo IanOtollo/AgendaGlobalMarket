@@ -3,15 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Loader2, Menu, MapPin } from "lucide-react";
-import { CATEGORY_LIST } from "@/lib/categories";
-import { CATEGORY_ICONS } from "@/lib/icons";
+import { iconOf } from "@/lib/trades";
 import { AREA_BY_SLUG } from "@/lib/areas";
 import { cn } from "@/lib/utils";
 import { ButtonLink } from "@/components/ds/button";
 import { Sheet } from "@/components/ds/sheet";
 import { Container } from "@/components/ds/primitives";
 import { BRAND } from "@/lib/config";
-import { useLocation, useSiteData, useSiteUi } from "./providers";
+import { useLocation, useSiteData, useSiteUi, useTrades } from "./providers";
 import { SearchBox } from "./search-box";
 import { LocationSheet } from "./location-sheet";
 
@@ -43,6 +42,7 @@ function LocationChip() {
 export function SiteHeader() {
   const path = usePathname();
   const { pros } = useSiteData();
+  const CATEGORY_LIST = useTrades();
   const { heroSearchVisible } = useSiteUi();
   const [scrolled, setScrolled] = useState(false);
   const [mega, setMega] = useState(false);
@@ -88,7 +88,7 @@ export function SiteHeader() {
                   <div className="grid grid-cols-[1.6fr_1fr] gap-8">
                     <div className="grid grid-cols-2 gap-1">
                       {CATEGORY_LIST.map((c) => {
-                        const Icon = CATEGORY_ICONS[c.name];
+                        const Icon = iconOf(c.icon);
                         return (
                           <Link key={c.slug} href={`/services/${c.slug}`} className="flex gap-3 rounded-lg p-3 hover:bg-muted">
                             <Icon className="mt-0.5 h-5 w-5 shrink-0" strokeWidth={1.5} aria-hidden />

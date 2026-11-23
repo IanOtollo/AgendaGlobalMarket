@@ -6,17 +6,18 @@ import { Accordion, Breadcrumbs, Container, Section } from "@/components/ds/prim
 import { BrowseView } from "@/components/site/browse-view";
 import { ProCard, ProCardSkeleton, ProGrid, kes } from "@/components/site/pro-card";
 import { AREA_BY_SLUG, AREA_LIST } from "@/lib/areas";
-import { CATEGORY_LIST, TRADE_NOUN, categoryBySlug } from "@/lib/categories";
+import { tradeBySlug, tradesOf } from "@/lib/trades";
 import { distanceKm } from "@/lib/geo";
 import { JsonLd, abs, breadcrumbLd, faqLd } from "@/lib/schema";
-import { getPublicPros } from "@/server/public";
+import { getPublicPros, getPublicSettings } from "@/server/public";
 
 export const dynamic = "force-dynamic";
 
 const NEAR_KM = 15;
 
 async function data(categorySlug: string, areaSlug: string) {
-  const category = categoryBySlug(categorySlug);
+  const trades = tradesOf(await getPublicSettings());
+  const category = tradeBySlug(trades, categorySlug);
   const area = AREA_BY_SLUG[areaSlug];
   if (!category || !area) return null;
   const pros = (await getPublicPros()).filter((p) => p.category === category.name)
@@ -24,13 +25,13 @@ async function data(categorySlug: string, areaSlug: string) {
   const near = pros.filter((x) => x.km <= NEAR_KM);
   const prices = near.map((x) => x.p.fromPrice).filter((n): n is number => typeof n === "number");
   const nearbyAreas = AREA_LIST.filter((a) => a.slug !== area.slug).map((a) => ({ a, km: distanceKm(area, a) })).sort((x, y) => x.km - y.km).slice(0, 6).map((x) => x.a);
-  return { category, area, pros, near, avg: prices.length ? Math.round(prices.reduce((s, n) => s + n, 0) / prices.length) : null, nearbyAreas };
+  return { category, trades, area, pros, near, avg: prices.length ? Math.round(prices.reduce((s, n) => s + n, 0) / prices.length) : null, nearbyAreas };
 }
 
 export async function generateMetadata({ params }: { params: { category: string; area: string } }): Promise<Metadata> {
   const d = await data(params.category, params.area);
   if (!d) return {};
-  const noun = TRADE_NOUN[d.category.name];
+  const noun = d.category.noun;
   const n = d.near.length;
   return {
     title: `${noun} in ${d.area.name}, Nairobi`,
@@ -44,8 +45,8 @@ export async function generateMetadata({ params }: { params: { category: string;
 export default async function AreaLanding({ params }: { params: { category: string; area: string } }) {
   const d = await data(params.category, params.area);
   if (!d) notFound();
-  const { category, area, near, avg, nearbyAreas } = d;
-  const noun = TRADE_NOUN[category.name];
+  const { category, trades, area, near, avg, nearbyAreas } = d;
+  const noun = category.noun;
   const within5 = near.filter((x) => x.km <= 5).length;
   const crumbs = [{ label: "Home", href: "/" }, { label: "Services", href: "/services" }, { label: category.name, href: `/services/${category.slug}` }, { label: area.name }];
   const faq = [
@@ -94,7 +95,7 @@ export default async function AreaLanding({ params }: { params: { category: stri
             </ul>
             <p className="mt-6 text-[15px] text-muted-foreground">Other trades in {area.name}:</p>
             <ul className="mt-2 flex flex-wrap gap-2">
-              {CATEGORY_LIST.filter((c) => c.slug !== category.slug).map((c) => <li key={c.slug}><Link href={`/services/${c.slug}/${area.slug}`} className="inline-flex min-h-11 items-center rounded-lg border border-border-strong bg-card px-4 text-[15px] font-medium hover:bg-background">{TRADE_NOUN[c.name]}</Link></li>)}
+              {trades.filter((c) => c.slug !== category.slug).map((c) => <li key={c.slug}><Link href={`/services/${c.slug}/${area.slug}`} className="inline-flex min-h-11 items-center rounded-lg border border-border-strong bg-card px-4 text-[15px] font-medium hover:bg-background">{c.noun}</Link></li>)}
             </ul>
           </div>
           <div><h2 className="mb-4 text-h3">Questions about {noun.toLowerCase()} in {area.name}</h2><Accordion items={faq} /></div>

@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, ChevronRight, UserCheck } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { AREAS, CATEGORIES, JOB_TYPES } from "@/lib/config";
-import { CATEGORY_ICONS } from "@/lib/icons";
+import { AREAS, JOB_TYPES } from "@/lib/config";
+import { iconOf, tradesOf } from "@/lib/trades";
 import { DEFAULT_HOURS, findConflict, slot } from "@/lib/schedule";
 import { isBookable } from "@/lib/team";
 import { cn, digits } from "@/lib/utils";
@@ -15,17 +15,18 @@ import { Field, Input, Select, Textarea } from "@/components/ui/field";
 import type { JobType, Priority } from "@/lib/types";
 
 const blank = {
-  phone: "", name: "", address: "", category: CATEGORIES[0] as string, type: "Repair" as JobType, title: "", description: "",
+  phone: "", name: "", address: "", category: "", type: "Repair" as JobType, title: "", description: "",
   priority: "normal" as Priority, billable: "yes", area: "", providerId: "", date: "", time: "", hours: String(DEFAULT_HOURS), price: "",
 };
 
 export default function NewWorkOrderPage() {
   const router = useRouter();
-  const { customers, providers, workOrders, addCustomer, addWorkOrder } = useStore();
+  const { customers, providers, workOrders, addCustomer, addWorkOrder, settings } = useStore();
+  const trades = tradesOf(settings);
   // /admin/work-orders/new?date=YYYY-MM-DD (from the calendar) pre-fills the day.
   const [f, setF] = useState(() => {
     const d = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("date") ?? "" : "";
-    return { ...blank, date: /^d{4}-d{2}-d{2}$/.test(d) ? d : "" };
+    return { ...blank, category: tradesOf(settings)[0]?.name ?? "", date: /^\d{4}-\d{2}-\d{2}$/.test(d) ? d : "" };
   });
   const set = (k: keyof typeof blank) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setF((s) => ({ ...s, [k]: e.target.value }));
@@ -62,7 +63,7 @@ export default function NewWorkOrderPage() {
         <div className="space-y-6 lg:col-span-2">
           <Card title="Customer" subtitle="Enter the caller's number. Returning customers are recognised automatically.">
             <div className="space-y-4">
-              <Field label="Phone number"><Input value={f.phone} onChange={set("phone")} inputMode="tel" placeholder="+254 7…" autoFocus /></Field>
+              <Field label="Phone number"><Input value={f.phone} onChange={set("phone")} inputMode="text" autoComplete="off" placeholder="Any format: 0712 345 678, +254 712 345 678, +1 202 555 0100" autoFocus /></Field>
               {known ? (
                 <p className="flex items-center gap-3 rounded-md bg-success/10 p-3 text-sm text-success">
                   <UserCheck className="h-4 w-4 shrink-0" />
@@ -82,8 +83,9 @@ export default function NewWorkOrderPage() {
               <div>
                 <p className="mb-1.5 text-sm font-medium text-muted-foreground">Trade</p>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-                  {CATEGORIES.map((c) => {
-                    const Icon = CATEGORY_ICONS[c];
+                  {trades.map((t) => {
+                    const c = t.name;
+                    const Icon = iconOf(t.icon);
                     return (
                       <button key={c} type="button" onClick={() => setF((s) => ({ ...s, category: c, providerId: "" }))}
                         className={cn("flex items-center justify-center gap-2 rounded-md border px-3 py-2.5 text-sm font-medium transition",

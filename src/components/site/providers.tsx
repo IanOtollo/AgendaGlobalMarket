@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { AREA_BY_SLUG, type Area } from "@/lib/areas";
 import { DEFAULT_RADIUS, clearLocation, loadLocation, nearestArea, round3, saveLocation, type LocState } from "@/lib/location";
 import { track } from "@/lib/analytics";
+import { tradesOf } from "@/lib/trades";
 import type { PublicPro, PublicSettings } from "@/lib/types";
 
 /* ---------- Live public data (server-rendered first, then kept fresh by the public stream) ---------- */
@@ -12,6 +13,12 @@ export const useSiteData = () => {
   const c = useContext(DataCtx);
   if (!c) throw new Error("SiteProviders missing");
   return c;
+};
+
+/** The trades from Settings, with slugs. Updates live when the admin edits them. */
+export const useTrades = () => {
+  const { settings } = useSiteData();
+  return useMemo(() => tradesOf(settings), [settings]);
 };
 
 /* ---------- Location ---------- */

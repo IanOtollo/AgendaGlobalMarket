@@ -5,16 +5,14 @@ import { Breadcrumbs, Container, Section } from "@/components/ds/primitives";
 import { BrowseView } from "@/components/site/browse-view";
 import { CategoryRail } from "@/components/site/category-rail";
 import { ProCardSkeleton, ProGrid } from "@/components/site/pro-card";
-import { CATEGORY_LIST, categoryBySlug } from "@/lib/categories";
-import { getPublicPros } from "@/server/public";
+import { tradeBySlug, tradesOf } from "@/lib/trades";
+import { getPublicPros, getPublicSettings } from "@/server/public";
 
 export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 
-export function generateStaticParams() { return CATEGORY_LIST.map((c) => ({ category: c.slug })); }
-
 export async function generateMetadata({ params }: { params: { category: string } }): Promise<Metadata> {
-  const c = categoryBySlug(params.category);
+  const c = tradeBySlug(tradesOf(await getPublicSettings()), params.category);
   if (!c) return {};
   const n = (await getPublicPros()).filter((p) => p.category === c.name).length;
   return {
@@ -24,8 +22,8 @@ export async function generateMetadata({ params }: { params: { category: string 
   };
 }
 
-export default function CategoryPage({ params }: { params: { category: string } }) {
-  const c = categoryBySlug(params.category);
+export default async function CategoryPage({ params }: { params: { category: string } }) {
+  const c = tradeBySlug(tradesOf(await getPublicSettings()), params.category);
   if (!c) notFound();
   return (
     <>

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { MessageCircle, Phone } from "lucide-react";
 import { BRAND } from "@/lib/config";
-import { CATEGORY_LIST } from "@/lib/categories";
+import { tradesOf } from "@/lib/trades";
+import type { Trade } from "@/lib/types";
 import { SITE } from "@/lib/site";
 import { digits } from "@/lib/utils";
 import { ButtonLink } from "@/components/ds/button";
@@ -12,7 +13,8 @@ const col = "text-[15px] text-inverse-foreground/75";
 const link = "inline-flex min-h-11 items-center hover:text-inverse-foreground hover:underline";
 
 /** Server component. Every line is real: contact details come from settings, legal details only appear once filled in. */
-export function SiteFooter({ phone }: { phone: string }) {
+export function SiteFooter({ phone, trades }: { phone: string; trades: Trade[] }) {
+  const CATEGORY_LIST = tradesOf({ trades });
   const wa = (t: string) => `https://wa.me/${digits(phone)}?text=${encodeURIComponent(t)}`;
   const entity = SITE.legal.entity || BRAND.name;
   return (

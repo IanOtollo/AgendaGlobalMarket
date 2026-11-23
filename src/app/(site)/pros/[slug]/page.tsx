@@ -6,7 +6,7 @@ import { Gallery } from "@/components/site/gallery";
 import { ProAvatar, RatingLine, kes } from "@/components/site/pro-card";
 import { BookingPanel, ProViewTracker, RecentlyViewed, RelatedTrades, ServesYou, ShareButton, SimilarPros } from "@/components/site/pro-actions";
 import { JsonLd, breadcrumbLd, proLd } from "@/lib/schema";
-import { categorySlug } from "@/lib/categories";
+import { categorySlug } from "@/lib/trades";
 import { getPublicPros, getPublicSettings } from "@/server/public";
 
 export const dynamic = "force-dynamic";

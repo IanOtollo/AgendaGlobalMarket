@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, Link2, MessageCircle, Phone, Share2, Star } from "lucide-react";
 import { AREA_BY_SLUG } from "@/lib/areas";
-import { RELATED, categorySlug } from "@/lib/categories";
+import { categorySlug, relatedOf } from "@/lib/trades";
 import { distanceKm } from "@/lib/geo";
 import { addRecentPro, getRecentPros } from "@/lib/recent";
 import { track } from "@/lib/analytics";
@@ -10,7 +10,7 @@ import { digits } from "@/lib/utils";
 import { Button, ButtonLink } from "@/components/ds/button";
 import { Pill } from "@/components/ds/primitives";
 import { ProCard, kes } from "./pro-card";
-import { useLocation, useSiteData } from "./providers";
+import { useLocation, useSiteData, useTrades } from "./providers";
 import Link from "next/link";
 import type { PublicPro } from "@/lib/types";
 
@@ -115,7 +115,8 @@ export function SimilarPros({ pro }: { pro: PublicPro }) {
 /** A fixed editorial pairing (never presented as booking history). */
 export function RelatedTrades({ pro }: { pro: PublicPro }) {
   const { pros } = useSiteData();
-  const groups = (RELATED[pro.category] ?? []).map((t) => ({ trade: t, list: pros.filter((p) => p.category === t).sort((a, b) => b.rating.avg - a.rating.avg || b.years - a.years).slice(0, 2) })).filter((g) => g.list.length);
+  const trades = useTrades();
+  const groups = relatedOf(pro.category, trades).map((t) => ({ trade: t, list: pros.filter((p) => p.category === t).sort((a, b) => b.rating.avg - a.rating.avg || b.years - a.years).slice(0, 2) })).filter((g) => g.list.length);
   if (!groups.length) return null;
   return (
     <section aria-labelledby="related" className="mt-14">
