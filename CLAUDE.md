@@ -17,7 +17,7 @@ Next.js 14 (App Router) · TypeScript · Tailwind 3.4 · Framer Motion · lucide
 - `/admin/*`, `/api/db` and `/api/db/stream` need the admin session (signed cookie). Checked in `src/middleware.ts`, the admin layout and every route handler. One admin account; credentials live in `.env.local` (`npm run admin:create`).
 - The only public APIs are `GET/POST /api/rate/[id]` and `GET /api/public/stream`, both rate-limited and validated.
 - `npm run test:privacy` (server must be running) fails if any public page, script, API or stream contains private data or a phone number other than the admin line. Run it after any change to public pages or APIs.
-- Run the site with `npm run dev:keepalive` (auto-restarts on failure). Demo data is seeded only in development or with `SEED_DEMO=1`.
+- Run the site with `npm run dev:keepalive` (auto-restarts on failure). There is no demo data: a new install starts empty.
 
 ## Backend (Convex)
 - The browser never talks to Convex. `src/server/db.ts` calls it with `APP_SECRET`, which every private Convex function checks. Set `APP_SECRET` in the Convex dashboard and in Vercel, plus `CONVEX_URL` in Vercel. `CONVEX_DEPLOY_KEY` is for the CLI only: never commit it or add it to Vercel.

@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import { ConvexClient, ConvexHttpClient } from "convex/browser";
 import { anyApi } from "convex/server";
-import { seed } from "@/lib/seed";
 import { BRAND } from "@/lib/config";
 import { AREA_BY_NAME } from "@/lib/areas";
 import { uniqueSlug } from "@/lib/slug";
@@ -22,8 +21,7 @@ const empty: DB = {
   settings: { businessName: BRAND.name, adminPhone: "" },
   providers: [], customers: [], requests: [], workOrders: [], ratings: [],
 };
-// Demo data only in development (or when explicitly enabled). A production install starts empty.
-const useSeed = () => process.env.NODE_ENV !== "production" || process.env.SEED_DEMO === "1";
+// There is no demo data: a new install starts empty and everything comes from the admin.
 
 export const convexConfigured = () => Boolean(process.env.CONVEX_URL && process.env.APP_SECRET);
 const secret = () => process.env.APP_SECRET as string;
@@ -43,8 +41,7 @@ export const subscribers = (): Set<Listener> => (g.__subs ??= new Set());
 
 // ---------- file backend (local development) ----------
 function loadFile(): DB {
-  const base = useSeed() ? seed : empty;
-  try { return normalize({ ...base, ...JSON.parse(fs.readFileSync(FILE, "utf8")) }); } catch { return normalize(structuredClone(base)); }
+  try { return normalize({ ...empty, ...JSON.parse(fs.readFileSync(FILE, "utf8")) }); } catch { return normalize(structuredClone(empty)); }
 }
 
 // ---------- Convex backend ----------
@@ -78,7 +75,7 @@ async function writeRemote(next: DB, prev: DB | null, by: string) {
 async function fetchRemote(): Promise<DB> {
   const r = (await convexHttp().query(anyApi.db.getAll, { secret: secret() })) as Remote;
   if (r.settings) { g.__by = r.by; return fromRemote(r); }
-  // First run against an empty Convex deployment: start empty. Demo data is never written to Convex.
+  // First run against an empty Convex deployment: initialise it with empty collections.
   const base = normalize(structuredClone(empty));
   await writeRemote(base, null, "server");
   return base;
