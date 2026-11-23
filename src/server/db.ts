@@ -3,7 +3,7 @@ import path from "path";
 import { ConvexClient, ConvexHttpClient } from "convex/browser";
 import { anyApi } from "convex/server";
 import { BRAND } from "@/lib/config";
-import { AREA_BY_NAME } from "@/lib/areas";
+import { AREA_BY_NAME, registerAreas } from "@/lib/areas";
 import { uniqueSlug } from "@/lib/slug";
 import { uid } from "@/lib/utils";
 import type { DB } from "@/lib/types";
@@ -37,6 +37,7 @@ const building = () => process.env.NEXT_PHASE === "phase-production-build";
 
 // Keeps derived/public fields consistent: unique slugs, and base-area coordinates from data/areas.json.
 export function normalize<T extends PublicSource>(db: T): T {
+  registerAreas(db.settings?.extraAreas);
   const taken = new Set<string>();
   db.providers = db.providers.map((p) => {
     const area = AREA_BY_NAME[p.area];

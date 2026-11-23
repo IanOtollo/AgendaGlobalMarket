@@ -6,7 +6,8 @@ import { ChevronRight, FileText, MapPin, MessageCircle, Phone } from "lucide-rea
 import { useStore } from "@/lib/store";
 import { activity } from "@/lib/activity";
 import { balanceOf, invoiceNo, payStatus, paidOf, totalOf } from "@/lib/billing";
-import { AREAS, JOB_TYPES, STATUS_LABEL } from "@/lib/config";
+import { JOB_TYPES, STATUS_LABEL } from "@/lib/config";
+import { AREA_LIST } from "@/lib/areas";
 import { DEFAULT_HOURS, findConflict } from "@/lib/schedule";
 import { cn, digits, fmtDate, money } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -139,7 +140,7 @@ export default function WorkOrderPage() {
                 <Field label="Service area">
                   <Select value={wo.area ?? ""} onChange={(e) => patch({ area: e.target.value || undefined })}>
                     <option value="">Not set</option>
-                    {Object.keys(AREAS).map((a) => <option key={a}>{a}</option>)}
+                    {AREA_LIST.map((a) => <option key={a.slug}>{a.name}</option>)}
                   </Select>
                 </Field>
               </div>

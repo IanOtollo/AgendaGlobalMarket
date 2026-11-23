@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { AREA_BY_SLUG, type Area } from "@/lib/areas";
+import { AREA_BY_SLUG, registerAreas, type Area } from "@/lib/areas";
 import { DEFAULT_RADIUS, clearLocation, loadLocation, nearestArea, round3, saveLocation, type LocState } from "@/lib/location";
 import { track } from "@/lib/analytics";
 import { tradesOf } from "@/lib/trades";
@@ -45,6 +45,7 @@ export const useSiteUi = () => {
 
 export function SiteProviders({ pros, settings, children }: SiteData & { children: ReactNode }) {
   const [data, setData] = useState<SiteData>({ pros, settings });
+  registerAreas(data.settings.areas); // areas the admin added, available to every component below
   const [state, setState] = useState<LocState>("unknown");
   const [coords, setCoords] = useState<Loc["coords"]>(null);
   const [area, setArea] = useState<Area | null>(null);

@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { AREAS } from "@/lib/config";
+import { AREA_BY_NAME, AREA_LIST } from "@/lib/areas";
 import { tradesOf } from "@/lib/trades";
 import { useStore } from "@/lib/store";
 import { slugify } from "@/lib/slug";
@@ -21,7 +21,7 @@ export function WorkerForm({ initial, submitLabel, onSubmit }: { initial?: Provi
   const [f, setF] = useState({
     name: initial?.name ?? "", category: initial?.category ?? CATEGORIES[0], years: String(initial?.years ?? 1),
     phone: initial?.phone ?? "", email: initial?.email ?? "", idNumber: initial?.idNumber ?? "",
-    joinedOn: initial?.joinedOn ?? today(), area: initial?.area ?? Object.keys(AREAS)[0],
+    joinedOn: initial?.joinedOn ?? today(), area: initial?.area ?? AREA_LIST[0].name,
     qualifications: initial?.qualifications.join(", ") ?? "", bio: initial?.bio ?? "",
     slug: initial?.slug ?? "", fromPrice: initial?.fromPrice != null ? String(initial.fromPrice) : "",
     availability: initial?.availability ?? "", languages: initial?.languages?.join(", ") ?? "",
@@ -51,7 +51,7 @@ export function WorkerForm({ initial, submitLabel, onSubmit }: { initial?: Provi
     onSubmit({
       name: f.name.trim(), category: f.category, years: Number(f.years) || 0, phone: f.phone.trim(),
       email: f.email.trim() || undefined, idNumber: f.idNumber.trim() || undefined, joinedOn: f.joinedOn || undefined,
-      area: f.area, ...AREAS[f.area], bio: f.bio,
+      area: f.area, lat: AREA_BY_NAME[f.area]?.lat ?? 0, lng: AREA_BY_NAME[f.area]?.lng ?? 0, bio: f.bio,
       qualifications: csv(f.qualifications),
       // Public profile fields. Empty means "not provided", and the site hides that line.
       slug: slugify(f.slug || f.name),
@@ -84,7 +84,7 @@ export function WorkerForm({ initial, submitLabel, onSubmit }: { initial?: Provi
           <Field label="Years of experience"><Input type="number" min={0} value={f.years} onChange={set("years")} /></Field>
         </div>
         <Field label="Base area (also used for nearest-first sorting)">
-          <Select value={f.area} onChange={set("area")}>{Object.keys(AREAS).map((a) => <option key={a}>{a}</option>)}</Select>
+          <Select value={f.area} onChange={set("area")}>{AREA_LIST.map((a) => <option key={a.slug}>{a.name}</option>)}</Select>
         </Field>
         <Field label="Map pin (optional)">
           <Input value={pinText} onChange={(e) => setPinText(e.target.value)} placeholder="Paste a Google Maps link or  -1.2921, 36.8219" aria-invalid={pinBad} />

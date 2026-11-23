@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { today, uid } from "./utils";
+import { registerAreas } from "./areas";
 import { activity } from "./activity";
 import type { DB, Provider, Customer, Request, WorkOrder, Settings } from "./types";
 
@@ -17,7 +18,7 @@ type Ctx = DB & {
   updateWorkOrder: (id: string, w: Partial<WorkOrder>) => void;
   addRating: (r: { workOrderId: string; providerId: string; stars: number; comment: string }) => void;
   // Resolves true once the server has saved, false if it could not. `renames` (old trade name to new) carries existing records over.
-  setSettings: (s: Settings, renames?: Record<string, string>) => Promise<boolean>;
+  setSettings: (s: Settings, renames?: Record<string, string>, areaRenames?: Record<string, string>) => Promise<boolean>;
 };
 
 const StoreCtx = createContext<Ctx | null>(null);
@@ -42,6 +43,7 @@ const nextNo = (d: DB) => `WO-${String(d.workOrders.length + 1).padStart(4, "0")
 // Admin only. `initial` is read on the server after the admin session is verified, so nothing is shown before it is loaded.
 export function StoreProvider({ children, initial }: { children: ReactNode; initial: DB }) {
   const [db, setDb] = useState<DB>(initial);
+  registerAreas(db.settings.extraAreas);
   const ref = useRef<DB>(initial);
   const me = useRef(uid("client"));
 
@@ -134,12 +136,13 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
           ? d
           : { ...d, ratings: [...d.ratings, { ...r, id: uid("rt"), createdAt: new Date().toISOString() }] },
       ),
-    setSettings: (settings, renames = {}) => {
+    setSettings: (settings, renames = {}, areaRenames = {}) => {
       const to = (c: string) => renames[c] ?? c;
+      const ar = (a?: string) => (a ? areaRenames[a] ?? a : a);
       return upd((d) => ({
         ...d, settings,
-        providers: d.providers.map((p) => ({ ...p, category: to(p.category) })),
-        workOrders: d.workOrders.map((w) => ({ ...w, category: to(w.category) })),
+        providers: d.providers.map((p) => ({ ...p, category: to(p.category), area: ar(p.area) as string })),
+        workOrders: d.workOrders.map((w) => ({ ...w, category: to(w.category), area: ar(w.area) })),
         requests: d.requests.map((r) => ({ ...r, category: to(r.category) })),
       }));
     },

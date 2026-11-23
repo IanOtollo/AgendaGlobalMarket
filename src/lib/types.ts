@@ -21,7 +21,7 @@ export type PublicPro = {
   bio?: string;
   reviews: { stars: number; comment: string; month: string }[]; // comments only, no customer names
 };
-export type PublicSettings = { businessName: string; adminPhone: string; trades: Trade[] };
+export type PublicSettings = { businessName: string; adminPhone: string; trades: Trade[]; areas: ServiceArea[] };
 export type Customer = { id: string; name: string; phone: string; address: string };
 export type Request = {
   id: string; name: string; phone: string; address: string; category: string;
@@ -43,7 +43,8 @@ export type WorkOrder = {
   date?: string; time?: string; duration?: number; price?: number; notes: string; createdAt: string;
 };
 export type Trade = { id: string; name: string; noun: string; blurb: string; icon: string }; // noun = "Plumbers", icon = a key from src/lib/trades.ts
-export type Settings = { businessName: string; adminPhone: string; trades?: Trade[] };
+export type ServiceArea = { name: string; slug: string; lat: number; lng: number }; // an area the admin added; the built-in list lives in data/areas.json
+export type Settings = { businessName: string; adminPhone: string; trades?: Trade[]; extraAreas?: ServiceArea[] };
 export type Rating = { id: string; workOrderId: string; providerId: string; stars: number; comment: string; createdAt: string };
 export type DB = {
   providers: Provider[]; customers: Customer[]; requests: Request[]; workOrders: WorkOrder[]; ratings: Rating[]; settings: Settings;

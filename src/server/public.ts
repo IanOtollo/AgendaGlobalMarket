@@ -50,5 +50,5 @@ export async function getPublicSettings(): Promise<PublicSettings> {
 
 export function publicSettingsOf(db: PublicSource): PublicSettings {
   const { businessName, adminPhone } = db.settings;
-  return { businessName, adminPhone, trades: tradesOf(db.settings).map(({ slug: _slug, ...t }) => t) };
+  return { businessName, adminPhone, trades: tradesOf(db.settings).map(({ slug: _slug, ...t }) => t), areas: db.settings.extraAreas ?? [] };
 }

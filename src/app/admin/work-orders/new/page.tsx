@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AlertTriangle, ChevronRight, UserCheck } from "lucide-react";
 import { useStore } from "@/lib/store";
-import { AREAS, JOB_TYPES } from "@/lib/config";
+import { JOB_TYPES } from "@/lib/config";
+import { AREA_LIST } from "@/lib/areas";
 import { iconOf, tradesOf } from "@/lib/trades";
 import { DEFAULT_HOURS, findConflict, slot } from "@/lib/schedule";
 import { isBookable } from "@/lib/team";
@@ -103,7 +104,7 @@ export default function NewWorkOrderPage() {
                 <Field label="Billing"><Select value={f.billable} onChange={set("billable")}><option value="yes">Billable</option><option value="no">Non-billable</option></Select></Field>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Service area"><Select value={f.area} onChange={set("area")}><option value="">Not set</option>{Object.keys(AREAS).map((a) => <option key={a}>{a}</option>)}</Select></Field>
+                <Field label="Service area"><Select value={f.area} onChange={set("area")}><option value="">Not set</option>{AREA_LIST.map((a) => <option key={a.slug}>{a.name}</option>)}</Select></Field>
                 <Field label="Quoted price (optional)"><Input type="number" value={f.price} onChange={set("price")} /></Field>
               </div>
               <Field label="Description of the work"><Textarea rows={4} value={f.description} onChange={set("description")} placeholder="What the customer reported and what needs to be done." /></Field>

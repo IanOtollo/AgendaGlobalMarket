@@ -1,4 +1,3 @@
-import { AREA_LIST } from "./areas";
 
 export const BRAND = {
   name: "Agenda Global Market",
@@ -19,10 +18,6 @@ export const SERVICE_INFO: Record<string, string> = {
   Painting: "Interior and exterior painting, wall finishing and protective coatings.",
 };
 
-// Name -> coordinates, derived from the curated list in data/areas.json (see src/lib/areas.ts).
-export const AREAS: Record<string, { lat: number; lng: number }> = Object.fromEntries(
-  AREA_LIST.map((a) => [a.name, { lat: a.lat, lng: a.lng }]),
-);
 export const STATUS_LABEL = {
   new: "New", scheduled: "Scheduled", in_progress: "In progress", completed: "Completed", cancelled: "Cancelled",
 } as const;

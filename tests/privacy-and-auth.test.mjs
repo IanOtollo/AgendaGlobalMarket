@@ -86,7 +86,7 @@ test("public data endpoint carries only whitelisted fields and is cacheable", as
   const text = await res.text();
   assertClean("public data", text);
   const data = JSON.parse(text);
-  assert.deepEqual(Object.keys(data.settings).sort(), ["adminPhone", "businessName", "trades"]);
+  assert.deepEqual(Object.keys(data.settings).sort(), ["adminPhone", "areas", "businessName", "trades"]);
   for (const p of data.pros) for (const k of Object.keys(p)) assert.ok(PUBLIC_KEYS.has(k), `public pro has non-whitelisted field "${k}"`);
 });
 

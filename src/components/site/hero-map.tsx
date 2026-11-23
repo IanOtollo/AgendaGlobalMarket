@@ -13,24 +13,27 @@ import { useLocation, useSiteData } from "./providers";
 const W = 600, H = 420, PAD = 26;
 const LABELLED = ["CBD", "Westlands", "Karen", "Kasarani", "Embakasi", "Ruaka", "Kahawa", "Ongata Rongai", "Syokimau", "Langata", "Donholm"];
 
-const allLng = [...NAIROBI_OUTLINE.map((p) => p[0]), ...AREA_LIST.map((a) => a.lng)];
-const allLat = [...NAIROBI_OUTLINE.map((p) => p[1]), ...AREA_LIST.map((a) => a.lat)];
-const [minLng, maxLng, minLat, maxLat] = [Math.min(...allLng), Math.max(...allLng), Math.min(...allLat), Math.max(...allLat)];
-const cosLat = Math.cos((((minLat + maxLat) / 2) * Math.PI) / 180);
-const S = Math.min((W - PAD * 2) / ((maxLng - minLng) * cosLat), (H - PAD * 2) / (maxLat - minLat));
-const ox = (W - (maxLng - minLng) * cosLat * S) / 2, oy = (H - (maxLat - minLat) * S) / 2;
-const project = (lng: number, lat: number) => ({ x: ox + (lng - minLng) * cosLat * S, y: oy + (maxLat - lat) * S });
-const OUTLINE_PATH = `M${NAIROBI_OUTLINE.map(([lng, lat]) => { const p = project(lng, lat); return `${p.x.toFixed(1)} ${p.y.toFixed(1)}`; }).join("L")}Z`;
-const GRID = (() => {
+// Everything that depends on where the areas are: the scale, the boundary path and the grid. Recomputed when areas are added.
+function makeGeo() {
+  const allLng = [...NAIROBI_OUTLINE.map((p) => p[0]), ...AREA_LIST.map((a) => a.lng)];
+  const allLat = [...NAIROBI_OUTLINE.map((p) => p[1]), ...AREA_LIST.map((a) => a.lat)];
+  const [minLng, maxLng, minLat, maxLat] = [Math.min(...allLng), Math.max(...allLng), Math.min(...allLat), Math.max(...allLat)];
+  const cosLat = Math.cos((((minLat + maxLat) / 2) * Math.PI) / 180);
+  const S = Math.min((W - PAD * 2) / ((maxLng - minLng) * cosLat), (H - PAD * 2) / (maxLat - minLat));
+  const ox = (W - (maxLng - minLng) * cosLat * S) / 2, oy = (H - (maxLat - minLat) * S) / 2;
+  const project = (lng: number, lat: number) => ({ x: ox + (lng - minLng) * cosLat * S, y: oy + (maxLat - lat) * S });
+  const outline = `M${NAIROBI_OUTLINE.map(([lng, lat]) => { const p = project(lng, lat); return `${p.x.toFixed(1)} ${p.y.toFixed(1)}`; }).join("L")}Z`;
   const v: number[] = [], h: number[] = [];
   for (let lng = Math.ceil(minLng * 20) / 20; lng <= maxLng; lng += 0.05) v.push(project(lng, 0).x);
   for (let lat = Math.ceil(minLat * 20) / 20; lat <= maxLat; lat += 0.05) h.push(project(0, lat).y);
-  return { v, h };
-})();
-const cbd = AREA_LIST.find((a) => a.name === "CBD");
+  return { project, outline, grid: { v, h }, cbd: AREA_LIST.find((a) => a.name === "CBD") };
+}
 
 export function HeroMap() {
-  const { pros } = useSiteData();
+  const { pros, settings } = useSiteData();
+  const areaKey = JSON.stringify(settings.areas);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const geo = useMemo(() => makeGeo(), [areaKey]);
   const loc = useLocation();
   const reduce = useReducedMotion();
   const [hover, setHover] = useState<{ kind: "pro"; ref: string } | { kind: "area"; slug: string } | null>(null);
@@ -40,12 +43,12 @@ export function HeroMap() {
     const groups = new Map<string, typeof pros>();
     pros.forEach((p) => { const k = `${p.lat.toFixed(3)},${p.lng.toFixed(3)}`; groups.set(k, [...(groups.get(k) ?? []), p]); });
     return [...groups.values()].flatMap((g) => g.map((p, i) => {
-      const base = project(p.lng, p.lat);
+      const base = geo.project(p.lng, p.lat);
       const a = (i / g.length) * Math.PI * 2 - Math.PI / 2, r = g.length > 1 ? 11 + g.length * 1.5 : 0;
       return { p, x: base.x + Math.cos(a) * r, y: base.y + Math.sin(a) * r };
     }));
   }, [pros]);
-  const origin = cbd ? project(cbd.lng, cbd.lat) : { x: W / 2, y: H / 2 };
+  const origin = geo.cbd ? geo.project(geo.cbd.lng, geo.cbd.lat) : { x: W / 2, y: H / 2 };
   const hoveredPro = hover?.kind === "pro" ? pros.find((p) => p.ref === hover.ref) : undefined;
   const hoveredArea = hover?.kind === "area" ? AREA_LIST.find((a) => a.slug === hover.slug) : undefined;
   const areaName = hoveredArea?.name ?? loc.area?.name;
@@ -56,16 +59,16 @@ export function HeroMap() {
       <div className="relative aspect-[10/7] overflow-hidden rounded-3xl bg-[#0B1530] shadow-hover ring-1 ring-white/10" onMouseLeave={() => setHover(null)}>
         <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full" aria-hidden>
           <g stroke="#1E3469" strokeWidth="1" opacity=".45">
-            {GRID.v.map((x) => <line key={`v${x}`} x1={x} y1="0" x2={x} y2={H} />)}
-            {GRID.h.map((y) => <line key={`h${y}`} x1="0" y1={y} x2={W} y2={y} />)}
+            {geo.grid.v.map((x) => <line key={`v${x}`} x1={x} y1="0" x2={x} y2={H} />)}
+            {geo.grid.h.map((y) => <line key={`h${y}`} x1="0" y1={y} x2={W} y2={y} />)}
           </g>
-          <motion.path d={OUTLINE_PATH} fill="#17294F" stroke="#5C7FC9" strokeWidth="1.6" strokeLinejoin="round"
+          <motion.path d={geo.outline} fill="#17294F" stroke="#5C7FC9" strokeWidth="1.6" strokeLinejoin="round"
             initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.9, ease: "easeOut" }} />
           <text x={W - PAD} y={H - 10} textAnchor="end" fill="#8E9BB8" fontSize="11" letterSpacing="2">NAIROBI COUNTY</text>
         </svg>
 
         {AREA_LIST.map((a) => {
-          const p = project(a.lng, a.lat);
+          const p = geo.project(a.lng, a.lat);
           const on = loc.area?.slug === a.slug;
           const label = LABELLED.includes(a.name);
           return (
