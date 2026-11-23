@@ -45,10 +45,10 @@ export default function Customers() {
       </div>
       <Modal open={open} onClose={() => setOpen(false)} title="Add customer">
         <div className="space-y-4">
-          <Field label="Name"><Input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></Field>
+          <Field label="Name (optional)"><Input value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /></Field>
           <Field label="Phone"><Input value={f.phone} onChange={(e) => setF({ ...f, phone: e.target.value })} inputMode="text" autoComplete="off" placeholder="Any format" /></Field>
           <Field label="Address"><Input value={f.address} onChange={(e) => setF({ ...f, address: e.target.value })} /></Field>
-          <Button className="w-full" disabled={!f.name || !f.phone} onClick={() => { addCustomer(f); setF({ name: "", phone: "", address: "" }); setOpen(false); }}>Save</Button>
+          <Button className="w-full" disabled={!f.phone.trim()} onClick={() => { addCustomer({ ...f, name: f.name.trim() || "Unnamed caller" }); setF({ name: "", phone: "", address: "" }); setOpen(false); }}>Save</Button>
         </div>
       </Modal>
     </>

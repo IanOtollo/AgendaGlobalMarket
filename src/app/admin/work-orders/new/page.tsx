@@ -38,10 +38,10 @@ export default function NewWorkOrderPage() {
   const options = providers.filter((p) => isBookable(p) && p.category === f.category);
   const busy = (id: string) => findConflict(workOrders, id, f.date, f.time, hours);
   const clash = busy(f.providerId);
-  const valid = f.phone && (known || f.name) && f.title && !clash;
+  const valid = f.phone && f.title && !clash; // a name is optional: the phone number identifies the caller
 
   const create = () => {
-    const customerId = known ? known.id : addCustomer({ name: f.name, phone: f.phone, address: f.address });
+    const customerId = known ? known.id : addCustomer({ name: f.name.trim() || "Unnamed caller", phone: f.phone, address: f.address });
     const scheduled = !!(f.providerId && f.date && f.time);
     const id = addWorkOrder({
       customerId, category: f.category, type: f.type, title: f.title, description: f.description, priority: f.priority,
@@ -72,8 +72,8 @@ export default function NewWorkOrderPage() {
                 </p>
               ) : f.phone.length > 5 ? (
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="Name"><Input value={f.name} onChange={set("name")} /></Field>
-                  <Field label="Address"><Input value={f.address} onChange={set("address")} /></Field>
+                  <Field label="Name (optional)"><Input value={f.name} onChange={set("name")} placeholder="Leave blank if they did not give it" /></Field>
+                  <Field label="Address (optional)"><Input value={f.address} onChange={set("address")} /></Field>
                 </div>
               ) : null}
             </div>
