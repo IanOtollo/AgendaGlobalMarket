@@ -26,26 +26,28 @@ export function HowItWorks({ phone }: { phone: string }) {
     <motion.div initial={reduce ? "show" : "hidden"} whileInView="show" viewport={{ once: true, margin: "-80px" }}>
       <ol className="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
         {STEPS.map((s, i) => (
-          <li key={s.n} className="relative flex gap-4">
-            <span className="relative h-10 w-10 shrink-0" aria-hidden>
-              <span className="absolute inset-0 flex items-center justify-center rounded-full border border-border-strong bg-muted text-base font-semibold text-muted-foreground">{s.n}</span>
-              <motion.span custom={at.step[i]} variants={pop} className="absolute inset-0 flex items-center justify-center rounded-full bg-brand text-base font-semibold text-on-accent">{s.n}</motion.span>
-            </span>
+          <li key={s.n} className="relative flex gap-4 md:flex-col md:gap-5">
+            {/* Desktop: the number and the line to the next step share one row, with the text underneath. */}
+            <div className="flex shrink-0 items-center md:w-full">
+              <span className="relative h-10 w-10 shrink-0" aria-hidden>
+                <span className="absolute inset-0 flex items-center justify-center rounded-full border border-border-strong bg-muted text-base font-semibold text-muted-foreground">{s.n}</span>
+                <motion.span custom={at.step[i]} variants={pop} className="absolute inset-0 flex items-center justify-center rounded-full bg-brand text-base font-semibold text-on-accent">{s.n}</motion.span>
+              </span>
+              {i < STEPS.length - 1 && (
+                <span aria-hidden className="mx-3 hidden h-1.5 flex-1 overflow-hidden rounded-full bg-muted md:-mr-5 md:block">
+                  <motion.span custom={at.line[i]} variants={grow("x")} className="block h-full origin-left rounded-full bg-brand" />
+                </span>
+              )}
+            </div>
             <motion.div custom={at.step[i] + 0.1} variants={rise}>
               <h3 className="text-lg font-semibold">{s.t}</h3>
               <p className="mt-1.5 text-base leading-relaxed text-muted-foreground">{s.d}</p>
             </motion.div>
-
-            {/* The line to the next step: across on desktop, down on phones. A 6px bar, so yellow stays a fill. */}
+            {/* Phones: the line runs down beside the text, under the number. A 6px bar, so yellow stays a fill. */}
             {i < STEPS.length - 1 && (
-              <>
-                <span aria-hidden className="absolute left-[3rem] top-[1.0625rem] hidden h-1.5 w-[calc(100%-1.5rem)] overflow-hidden rounded-full bg-muted md:block">
-                  <motion.span custom={at.line[i]} variants={grow("x")} className="block h-full origin-left rounded-full bg-brand" />
-                </span>
-                <span aria-hidden className="absolute left-[1.0625rem] top-[3rem] h-[calc(100%-1rem)] w-1.5 overflow-hidden rounded-full bg-muted md:hidden">
-                  <motion.span custom={at.line[i]} variants={grow("y")} className="block h-full origin-top rounded-full bg-brand" />
-                </span>
-              </>
+              <span aria-hidden className="absolute left-[1.0625rem] top-[3rem] h-[calc(100%-1rem)] w-1.5 overflow-hidden rounded-full bg-muted md:hidden">
+                <motion.span custom={at.line[i]} variants={grow("y")} className="block h-full origin-top rounded-full bg-brand" />
+              </span>
             )}
           </li>
         ))}

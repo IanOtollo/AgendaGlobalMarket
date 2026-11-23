@@ -13,7 +13,10 @@ import { CategoryRail } from "./category-rail";
 import { ProCard, ProGrid } from "./pro-card";
 import { useLocation, useSiteData, useSiteUi } from "./providers";
 import { SearchBox } from "./search-box";
-import { HeroIllustration } from "./hero-illustration";
+import dynamic from "next/dynamic";
+
+// The map library is large: it loads in its own chunk, after the page, and only on large screens.
+const HeroMap = dynamic(() => import("./hero-map").then((m) => m.HeroMap), { ssr: false, loading: () => <div className="hidden w-full max-w-[26rem] lg:block"><div className="aspect-[5/4] animate-pulse rounded-3xl bg-muted" /></div> });
 
 export function HomeHero() {
   const loc = useLocation();
@@ -48,7 +51,7 @@ export function HomeHero() {
             ))}
           </p>
         </div>
-        <HeroIllustration />
+        <HeroMap />
       </Container>
     </Section>
   );

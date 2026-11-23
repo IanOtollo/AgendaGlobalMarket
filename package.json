@@ -8,7 +8,8 @@
     "start": "next start",
     "dev:keepalive": "node scripts/keep-alive.mjs",
     "test:privacy": "node --test tests/privacy-and-auth.test.mjs",
-    "admin:create": "node scripts/create-admin.mjs"
+    "admin:create": "node scripts/create-admin.mjs",
+    "postinstall": "node scripts/copy-maplibre.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
@@ -20,6 +21,7 @@
     "convex": "^1.51.0",
     "framer-motion": "^11.3.0",
     "lucide-react": "^0.400.0",
+    "maplibre-gl": "^6.19.0",
     "next": "14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
