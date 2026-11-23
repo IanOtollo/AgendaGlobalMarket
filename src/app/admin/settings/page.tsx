@@ -99,7 +99,7 @@ export default function SettingsPage() {
     ok ? toast("success", "Trades saved", Object.keys(renames).length ? "Renamed trades were carried over to workers and work orders." : "The website menus and filters now show them.") : toast("error", "Trades were not saved", "Check your connection and try again.");
   };
 
-  /* ---------- Service areas (the built-in Nairobi list is always available; these are the ones you add) ---------- */
+  /* ---------- Service areas (the Nairobi list is always available; these are the ones you add) ---------- */
   const savedAreas = useMemo(() => areaRows(settings.extraAreas), [settings.extraAreas]);
   const [areas, setAreas] = useState<AreaRow[]>(savedAreas);
   const [savingAreas, setSavingAreas] = useState(false);
@@ -109,7 +109,7 @@ export default function SettingsPage() {
   const builtIn = new Set(BUILT_IN_AREAS.flatMap((a) => [a.name.toLowerCase(), a.slug]));
   const areaErrors = areas.map((a, i) => {
     if (!a.name.trim()) return "Give the area a name.";
-    if (builtIn.has(a.name.trim().toLowerCase()) || builtIn.has(slugify(a.name))) return "That area is already built in.";
+    if (builtIn.has(a.name.trim().toLowerCase()) || builtIn.has(slugify(a.name))) return "That area is already in the list.";
     if (areas.some((o, j) => j !== i && slugify(o.name) === slugify(a.name))) return "Another area already has this name.";
     if (!parsePin(a.loc)) return "Paste a Google Maps link (from the address bar) or coordinates like -1.2921, 36.8219.";
     return "";
@@ -231,10 +231,10 @@ export default function SettingsPage() {
             </div>
           </Fold>
 
-          <Fold id="areas" title="Service areas" summary={`${BUILT_IN_AREAS.length} built in${areas.length ? ` + ${areas.length} added: ${areas.map((a) => a.name || "New area").join(", ")}` : ""}`}>
+          <Fold id="areas" title="Service areas" summary={`${BUILT_IN_AREAS.length + areas.length} areas${areas.length ? `, including ${areas.length} you added: ${areas.map((a) => a.name || "New area").join(", ")}` : ""}`}>
             <p className="text-sm text-muted-foreground">The {BUILT_IN_AREAS.length} Nairobi areas are always available. Add others here (for example a town just outside Nairobi). They appear in the worker and work order forms, the website&apos;s area pickers and on the map.</p>
             <details className="rounded-lg bg-muted/60 px-3 py-2 text-sm">
-              <summary className="cursor-pointer font-medium">See the built-in areas</summary>
+              <summary className="cursor-pointer font-medium">See the Nairobi areas</summary>
               <p className="mt-2 text-muted-foreground">{BUILT_IN_AREAS.map((a) => a.name).join(", ")}</p>
             </details>
             <ul className="space-y-2">
