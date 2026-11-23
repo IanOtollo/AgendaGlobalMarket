@@ -1,7 +1,11 @@
 // Reads a map location from what an admin pastes: a Google Maps address-bar link or plain "latitude, longitude".
 // Returns null when no usable coordinates are found. Short links (maps.app.goo.gl) carry no coordinates and cannot be read.
-const NUM = "(-?\d{1,3}\.\d+)";
-const PATTERNS = [new RegExp(`@${NUM},${NUM}`), new RegExp(`!3d${NUM}!4d${NUM}`), new RegExp(`[?&](?:q|ll|query|destination)=${NUM}(?:,|%2C)\s*${NUM}`), new RegExp(`^\s*${NUM}\s*[, ]\s*${NUM}\s*$`)];
+const PATTERNS = [
+  /@(-?\d{1,3}\.\d+),(-?\d{1,3}\.\d+)/,
+  /!3d(-?\d{1,3}\.\d+)!4d(-?\d{1,3}\.\d+)/,
+  /[?&](?:q|ll|query|destination)=(-?\d{1,3}\.\d+)(?:,|%2C)\s*(-?\d{1,3}\.\d+)/,
+  /^\s*(-?\d{1,3}\.\d+)\s*[, ]\s*(-?\d{1,3}\.\d+)\s*$/,
+];
 
 export type Pin = { lat: number; lng: number };
 // Greater Nairobi, with room for the surrounding towns. Anything outside is almost certainly a typo.
