@@ -52,7 +52,7 @@ export function HeroMap() {
   const areaCount = areaName ? pros.filter((p) => p.area === areaName).length : 0;
 
   return (
-    <div className="hidden w-full max-w-[28rem] lg:block">
+    <div className="w-full md:max-w-[28rem]">
       <div className="relative aspect-[10/7] overflow-hidden rounded-3xl bg-[#0B1530] shadow-hover ring-1 ring-white/10" onMouseLeave={() => setHover(null)}>
         <svg viewBox={`0 0 ${W} ${H}`} className="absolute inset-0 h-full w-full" aria-hidden>
           <g stroke="#1E3469" strokeWidth="1" opacity=".45">
@@ -74,7 +74,7 @@ export function HeroMap() {
               initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 + Math.hypot(p.x - origin.x, p.y - origin.y) / 400, duration: 0.4 }}
               className="group absolute z-10 -translate-x-1/2 -translate-y-1/2 p-2 focus-visible:outline-none" style={{ left: `${(p.x / W) * 100}%`, top: `${(p.y / H) * 100}%` }}>
               <span className={cn("block h-2 w-2 rounded-full bg-[#8E9BB8] transition-transform group-hover:scale-150 group-focus-visible:scale-150 group-focus-visible:ring-2 group-focus-visible:ring-white", on && "scale-150 bg-white ring-2 ring-white/60")} />
-              {label && <span className="pointer-events-none absolute left-full top-1/2 ml-0.5 -translate-y-1/2 whitespace-nowrap text-[10px] font-medium text-[#C5CAD3]">{a.name}</span>}
+              {label && <span className="pointer-events-none absolute left-full top-1/2 ml-0.5 hidden -translate-y-1/2 whitespace-nowrap text-[10px] sm:block font-medium text-[#C5CAD3]">{a.name}</span>}
             </motion.button>
           );
         })}
@@ -92,7 +92,7 @@ export function HeroMap() {
           </motion.div>
         ))}
 
-        <div className="pointer-events-none absolute left-3 top-3 z-30 max-w-[70%] rounded-lg bg-white/95 px-3 py-2 text-[#101F42] shadow-hover" aria-live="polite">
+        <div className="pointer-events-none absolute left-2 top-2 z-30 max-w-[75%] sm:left-3 sm:top-3 rounded-lg bg-white/95 px-3 py-2 text-[#101F42] shadow-hover" aria-live="polite">
           {hoveredPro ? (
             <><p className="truncate text-sm font-semibold leading-tight">{hoveredPro.name}</p><p className="text-xs text-[#4B5563]">{hoveredPro.category} · {hoveredPro.area}</p></>
           ) : (
@@ -103,7 +103,7 @@ export function HeroMap() {
       </div>
       <ul className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-muted-foreground" aria-label="Map key">
         <li className="flex items-center gap-1.5"><svg viewBox="0 0 24 32" className="h-4 w-3" aria-hidden><path d="M12 31C12 31 2 19.5 2 12.5a10 10 0 0 1 20 0C22 19.5 12 31 12 31Z" fill="#FFC105" stroke="currentColor" strokeWidth="2.4" /></svg>A professional (tap for their profile)</li>
-        <li className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#8E9BB8]" />An area you can choose</li>
+        <li className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#8E9BB8]" />Areas you can choose</li>
       </ul>
     </div>
   );

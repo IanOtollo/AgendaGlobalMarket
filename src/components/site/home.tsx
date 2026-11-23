@@ -15,8 +15,8 @@ import { useLocation, useSiteData, useSiteUi } from "./providers";
 import { SearchBox } from "./search-box";
 import dynamic from "next/dynamic";
 
-// The map library is large: it loads in its own chunk, after the page, and only on large screens.
-const HeroMap = dynamic(() => import("./hero-map").then((m) => m.HeroMap), { ssr: false, loading: () => <div className="hidden w-full max-w-[26rem] lg:block"><div className="aspect-[5/4] animate-pulse rounded-3xl bg-muted" /></div> });
+// The map library is large: it loads in its own chunk, after the page, and only on screens that show it.
+const HeroMap = dynamic(() => import("./hero-map").then((m) => m.HeroMap), { ssr: false, loading: () => <div className="w-full md:max-w-[28rem]"><div className="aspect-[10/7] animate-pulse rounded-3xl bg-muted" /></div> });
 
 export function HomeHero() {
   const loc = useLocation();
