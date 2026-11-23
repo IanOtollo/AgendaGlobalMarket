@@ -70,12 +70,12 @@ export default function NewWorkOrderPage() {
                   <UserCheck className="h-4 w-4 shrink-0" />
                   <span><span className="font-semibold">{known.name}</span> · existing customer{known.address && `, ${known.address}`}</span>
                 </p>
-              ) : f.phone.length > 5 ? (
+              ) : (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <Field label="Name (optional)"><Input value={f.name} onChange={set("name")} placeholder="Leave blank if they did not give it" /></Field>
                   <Field label="Address (optional)"><Input value={f.address} onChange={set("address")} /></Field>
                 </div>
-              ) : null}
+              )}
             </div>
           </Card>
 
