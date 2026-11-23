@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { AREAS, CATEGORIES } from "@/lib/config";
 import { slugify } from "@/lib/slug";
+import { parsePin } from "@/lib/pin";
 import { today } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Field, Input, Select, Textarea } from "@/components/ui/field";
@@ -22,6 +23,9 @@ export function WorkerForm({ initial, submitLabel, onSubmit }: { initial?: Provi
     availability: initial?.availability ?? "", languages: initial?.languages?.join(", ") ?? "",
     serviceRadiusKm: initial?.serviceRadiusKm != null ? String(initial.serviceRadiusKm) : "",
   });
+  const [pinText, setPinText] = useState(initial?.pin ? `${initial.pin.lat}, ${initial.pin.lng}` : "");
+  const pin = parsePin(pinText);
+  const pinBad = pinText.trim() !== "" && !pin;
   const [photo, setPhoto] = useState<string | undefined>(initial?.photo);
   const [upErr, setUpErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -51,7 +55,7 @@ export function WorkerForm({ initial, submitLabel, onSubmit }: { initial?: Provi
       availability: (f.availability || undefined) as Provider["availability"],
       languages: csv(f.languages).length ? csv(f.languages) : undefined,
       serviceRadiusKm: f.serviceRadiusKm ? Number(f.serviceRadiusKm) : undefined,
-      photo, gallery: initial?.gallery,
+      photo, gallery: initial?.gallery, pin: pin ?? undefined,
       active: initial?.active ?? true, employment: initial?.employment ?? "active", leftOn: initial?.leftOn, leftReason: initial?.leftReason,
     });
 
@@ -78,6 +82,12 @@ export function WorkerForm({ initial, submitLabel, onSubmit }: { initial?: Provi
         <Field label="Base area (also used for nearest-first sorting)">
           <Select value={f.area} onChange={set("area")}>{Object.keys(AREAS).map((a) => <option key={a}>{a}</option>)}</Select>
         </Field>
+        <Field label="Map pin (optional)">
+          <Input value={pinText} onChange={(e) => setPinText(e.target.value)} placeholder="Paste a Google Maps link or  -1.2921, 36.8219" aria-invalid={pinBad} />
+        </Field>
+        <p className={pinBad ? "text-xs text-destructive" : "text-xs text-muted-foreground"} role={pinBad ? "alert" : undefined}>
+          {pinBad ? "Could not read a location in Nairobi from that. Open the place in Google Maps and paste the link from the address bar (short links do not work)." : pin ? `Pin set at ${pin.lat.toFixed(4)}, ${pin.lng.toFixed(4)}. The public map shows it only to about 1 km, never the exact spot.` : "Without a pin, the professional shows at the centre of their base area."}
+        </p>
         <Field label="Qualifications (comma separated)"><Input value={f.qualifications} onChange={set("qualifications")} /></Field>
         <Field label="Short bio"><Textarea value={f.bio} onChange={set("bio")} /></Field>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -110,7 +120,7 @@ export function WorkerForm({ initial, submitLabel, onSubmit }: { initial?: Provi
         </div>
       </section>
 
-      <Button className="w-full" disabled={!f.name.trim() || !f.phone.trim()} onClick={submit}>{submitLabel}</Button>
+      <Button className="w-full" disabled={!f.name.trim() || !f.phone.trim() || pinBad} onClick={submit}>{submitLabel}</Button>
     </div>
   );
 }

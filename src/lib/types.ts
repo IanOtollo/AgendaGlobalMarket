@@ -1,6 +1,7 @@
 export type Provider = {
   id: string; name: string; category: string; qualifications: string[]; years: number;
   bio: string; area: string; lat: number; lng: number;
+  pin?: { lat: number; lng: number }; // optional exact map pin chosen by the admin. Private: the public site only gets it rounded to about 1 km.
   active: boolean; // listed on the public site and open to new bookings
   // Private staff record. Never shown on the public site.
   phone: string; email?: string; idNumber?: string; joinedOn?: string;
@@ -14,7 +15,7 @@ export type Provider = {
 // src/server/public.ts. Never add phones, emails, ID numbers, addresses, customers or work orders here.
 export type PublicPro = {
   ref: string; slug: string; name: string; category: string; area: string; areaSlug: string;
-  lat: number; lng: number; // centre of the base area, never a precise location
+  lat: number; lng: number; // the base area's centre, or the admin's pin rounded to about 1 km. Never a precise location
   years: number; qualifications: string[]; rating: { avg: number; count: number; dist: number[] }; // dist = how many 1 to 5 star ratings
   photo?: string; gallery?: string[]; fromPrice?: number; availability?: "today" | "week" | "booked"; languages?: string[]; serviceRadiusKm?: number;
   bio?: string;

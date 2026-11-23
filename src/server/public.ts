@@ -22,8 +22,9 @@ export function publicProsOf(db: DB): PublicPro[] {
       category: p.category,
       area: p.area,
       areaSlug: area?.slug ?? slugify(p.area),
-      lat: area?.lat ?? p.lat,
-      lng: area?.lng ?? p.lng,
+      // The admin's pin, rounded to 2 decimals (about 1.1 km), so a home address can never be read off the map.
+      lat: p.pin ? Math.round(p.pin.lat * 100) / 100 : area?.lat ?? p.lat,
+      lng: p.pin ? Math.round(p.pin.lng * 100) / 100 : area?.lng ?? p.lng,
       years: p.years,
       qualifications: [...p.qualifications],
       rating: { ...ratingOf(db.ratings, p.id), dist: [1, 2, 3, 4, 5].map((n) => db.ratings.filter((r) => r.providerId === p.id && r.stars === n).length) },

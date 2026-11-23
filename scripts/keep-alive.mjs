@@ -28,7 +28,7 @@ async function healthy() {
 setInterval(async () => {
   if (!child) return;
   if (await healthy()) { failures = 0; return; }
-  if (++failures >= 3) { failures = 0; log("health check failed 3 times; restarting"); child.kill(); }
+  if (++failures >= 3) { failures = 0; log("health check failed 3 times; restarting"); child?.kill(); }
 }, 20000);
 
 const stop = () => { stopping = true; child?.kill(); process.exit(0); };
