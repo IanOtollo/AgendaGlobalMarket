@@ -12,8 +12,9 @@ import { GlobalSearch } from "@/components/admin/global-search";
 import { WorkerDrawer } from "@/components/admin/worker-drawer";
 
 // Phones get a bottom tab bar: the four daily areas, plus "More" for the rest.
-const TABS = NAV.slice(0, 4);
-const MORE = NAV.slice(4);
+const DAILY = ["/admin", "/admin/work-orders", "/admin/schedule", "/admin/team"];
+const TABS = NAV.filter((n) => DAILY.includes(n.href));
+const MORE = NAV.filter((n) => !DAILY.includes(n.href));
 const isActive = (path: string, href: string) => (href === "/admin" ? path === href : path.startsWith(href));
 
 export function AdminShell({ children, email }: { children: React.ReactNode; email: string }) {
