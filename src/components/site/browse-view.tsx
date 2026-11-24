@@ -244,7 +244,7 @@ export function BrowseView({ category, areaLock }: { category?: string; areaLock
         <div className={cn("mt-6 transition-opacity duration-150", (pending || qDraft !== q) && "opacity-60")} aria-busy={pending}>
           {rows.length > 0 ? (
             <>
-              <ProGrid className="lg:grid-cols-2 xl:grid-cols-3">
+              <ProGrid className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {rows.slice(0, shown).map(({ p, km }) => <ProCard key={p.ref} pro={p} km={ref ? km : null} />)}
               </ProGrid>
               <div ref={sentinel} aria-hidden className="h-px" />

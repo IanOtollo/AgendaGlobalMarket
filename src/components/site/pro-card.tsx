@@ -67,18 +67,20 @@ export function ProCard({ pro, km, variant = "default", selected }: { pro: Publi
       className={cn("group flex h-full flex-col overflow-hidden rounded-card border bg-card transition duration-240 ease-ui hover:-translate-y-0.5 hover:shadow-hover", selected ? "border-primary ring-2 ring-primary" : "border-border")}>
       <div className="relative aspect-[4/3] overflow-hidden">
         <div data-vt-source className="h-full w-full transition-transform duration-400 ease-ui group-hover:scale-[1.03]"><ProAvatar pro={pro} /></div>
-        {avail && <Pill tone={avail.tone} className="absolute bottom-3 left-3 bg-card shadow-sm"><span className={cn("h-2 w-2 rounded-full", avail.tone === "success" ? "bg-success" : avail.tone === "warning" ? "bg-warning" : "bg-muted-foreground")} aria-hidden />{avail.label}</Pill>}
+        {avail && <Pill tone={avail.tone} className="absolute bottom-2 left-2 max-w-[calc(100%-1rem)] bg-card px-2 py-0.5 text-[11px] shadow-sm sm:bottom-3 sm:left-3 sm:max-w-none sm:px-3 sm:py-1 sm:text-sm"><span className={cn("h-2 w-2 shrink-0 rounded-full", avail.tone === "success" ? "bg-success" : avail.tone === "warning" ? "bg-warning" : "bg-muted-foreground")} aria-hidden /><span className="truncate">{avail.label}</span></Pill>}
       </div>
-      <div className="flex flex-1 flex-col p-4">
-        <h3 className="truncate text-base font-semibold">{pro.name}</h3>
-        <p className="truncate text-[15px] text-muted-foreground">{pro.category} · {pro.area}</p>
-        <p className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[15px]">
+      {/* Compact on phones so two cards sit side by side; roomier from tablet up. */}
+      <div className="flex flex-1 flex-col p-2.5 sm:p-3.5">
+        <h3 className="truncate text-[15px] font-semibold sm:text-[15px]">{pro.name}</h3>
+        <p className="truncate text-[13px] text-muted-foreground sm:text-sm">{pro.category} · {pro.area}</p>
+        <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] sm:mt-2 sm:text-sm">
           <RatingLine pro={pro} />
           {km != null && <><span aria-hidden className="text-muted-foreground">·</span><span className="text-muted-foreground">{kmLabel(km)} away</span></>}
         </p>
-        <p className="mt-1 text-[15px] text-muted-foreground">{pro.years} {pro.years === 1 ? "year" : "years"} experience</p>
-        <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3">
-          <span className="min-w-0 truncate text-[15px] font-semibold">{pro.fromPrice != null ? <>From {kes(pro.fromPrice)} <span className="font-normal text-muted-foreground">/ visit</span></> : <span className="font-medium text-muted-foreground">View profile</span>}</span>
+        <p className="mt-1 text-[13px] text-muted-foreground sm:text-sm">{pro.years} {pro.years === 1 ? "year" : "years"} experience</p>
+        <div className="mt-2.5 flex items-center justify-between gap-2 border-t border-border pt-2 sm:mt-3 sm:gap-3 sm:pt-2.5">
+          {/* Never cut off: if the card is too narrow, "/ visit" drops to the next line instead of being truncated. */}
+          <span className="min-w-0 text-[13px] font-semibold leading-snug sm:text-sm">{pro.fromPrice != null ? <>From {kes(pro.fromPrice)}{" "}<span className="hidden whitespace-nowrap font-normal text-muted-foreground sm:inline">/ visit</span></> : <span className="font-medium text-muted-foreground">View profile</span>}</span>
           <span className="flex shrink-0 items-center gap-1 text-[15px] font-medium text-foreground">
             <span className="hidden opacity-0 transition-opacity duration-150 group-hover:opacity-100 sm:inline">View</span>
             <ArrowRight className="h-4 w-4 transition-transform duration-150 group-hover:translate-x-0.5" aria-hidden />
@@ -94,7 +96,7 @@ export function ProCardSkeleton() {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-card border border-border bg-card" aria-hidden>
       <Skeleton className="aspect-[4/3] rounded-none" />
-      <div className="flex flex-1 flex-col gap-2 p-4">
+      <div className="flex flex-1 flex-col gap-2 p-2.5 sm:p-3.5">
         <Skeleton className="h-5 w-2/3" /><Skeleton className="h-4 w-1/2" /><Skeleton className="h-4 w-3/4" /><Skeleton className="h-4 w-1/3" />
         <Skeleton className="mt-4 h-9 w-full" />
       </div>
@@ -102,7 +104,7 @@ export function ProCardSkeleton() {
   );
 }
 
-/** 1 column under 640px, 2 from 640, 3 from 1024, 4 from 1280. Gap 24px. */
+/** 2 columns on phones (tight 12px gap), 3 from 640, 4 from 1024, 5 from 1280. */
 export function ProGrid({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4", className)}>{children}</div>;
+  return <div className={cn("grid grid-cols-2 gap-3 sm:gap-5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5", className)}>{children}</div>;
 }
