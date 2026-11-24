@@ -19,7 +19,7 @@ export type Coll = (typeof COLLS)[number];
 export type Changes = { upserts: { coll: Coll; rid: string; data: Record<string, unknown> }[]; settings?: DB["settings"] };
 type G = {
   __ver?: number; __db?: DB; __at?: number; __subs?: Set<Listener>; __live?: ConvexClient; __unsub?: () => void; __http?: ConvexHttpClient;
-  __pub?: PublicSource; __pubAt?: number;
+  __pub?: PublicSource; __pubAt?: number; __inflight?: Promise<DB>;
 };
 const g = globalThis as unknown as G;
 
@@ -73,9 +73,15 @@ async function fetchRemote(): Promise<DB> {
 /** Everything, for the admin. Falls back to the last good copy if the database is briefly unreachable. */
 export async function getDb(): Promise<DB> {
   if (!convexConfigured()) return (g.__db ??= loadFile());
-  // Reused for a moment so one page render makes one query. A live subscription is not trusted to keep this fresh:
-  // on serverless hosting a paused instance keeps its subscription object but stops receiving updates, so its copy goes stale.
-  if (g.__db && Date.now() - (g.__at ?? 0) < 1500) return g.__db;
+  // Always read from Convex (it is the only source of truth). Nothing is reused between requests, because on serverless
+  // hosting every instance would keep its own copy and they would disagree. Only a read that is already in flight is
+  // shared, so one page render makes one query.
+  if (g.__inflight) return g.__inflight;
+  g.__inflight = readRemote().finally(() => { g.__inflight = undefined; });
+  return g.__inflight;
+}
+
+async function readRemote(): Promise<DB> {
   // A write that lands while this read is in flight must not be overwritten by the older data we just fetched.
   const ver = g.__ver ?? 0;
   try {
