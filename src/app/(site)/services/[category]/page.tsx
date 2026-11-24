@@ -56,7 +56,7 @@ export default async function CategoryPage({ params }: { params: { category: str
             </div>
             {d && (
               <div className="relative aspect-[4/5] w-full max-w-sm justify-self-start overflow-hidden rounded-card border border-border bg-muted lg:max-w-none lg:justify-self-end">
-                <Image src={d.image} alt={`${d.title}: a One Agenda Global Market professional at work`} fill priority sizes="(min-width: 1024px) 380px, 90vw" className="object-cover object-center" />
+                <Image src={d.image} alt={`${d.title}: a One Agenda Global Market professional at work`} fill priority unoptimized sizes="(min-width: 1024px) 380px, 90vw" className="object-cover object-center" />
               </div>
             )}
           </div>

@@ -24,7 +24,7 @@ export function CategoryRail({ selected, onSelect, hrefFor }: { selected?: strin
             {/* The whole service photo (4:5, nothing cropped) fills the top of the tile; a trade without a photo shows its icon instead. */}
             <span className="relative block aspect-[4/5] w-full shrink-0 overflow-hidden bg-muted">
               {d ? (
-                <Image src={d.image} alt="" fill sizes="(min-width: 1024px) 130px, 144px" className="object-cover" />
+                <Image src={d.image} alt="" fill unoptimized sizes="(min-width: 1024px) 130px, 144px" className="object-cover" />
               ) : (
                 <span className="flex h-full items-center justify-center text-muted-foreground"><Icon className="h-8 w-8" strokeWidth={1.5} aria-hidden /></span>
               )}

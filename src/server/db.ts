@@ -18,7 +18,7 @@ export const COLLS = ["providers", "customers", "requests", "workOrders", "ratin
 export type Coll = (typeof COLLS)[number];
 export type Changes = { upserts: { coll: Coll; rid: string; data: Record<string, unknown> }[]; settings?: DB["settings"] };
 type G = {
-  __ver?: number; __db?: DB; __at?: number; __subs?: Set<Listener>; __live?: ConvexClient; __unsub?: () => void; __http?: ConvexHttpClient;
+  __ver?: number; __db?: DB; __at?: number; __subs?: Set<Listener>; __live?: ConvexClient; __unsub?: () => void; __http?: ConvexHttpClient; __httpPub?: ConvexHttpClient;
   __pub?: PublicSource; __pubAt?: number; __inflight?: Promise<DB>;
 };
 const g = globalThis as unknown as G;
@@ -34,7 +34,12 @@ const secret = () => process.env.APP_SECRET as string;
 // Next.js caches server-side fetches by default, which would freeze the first answer Convex gave (even an empty one
 // from build time). Never cache these.
 const noCacheFetch: typeof fetch = (input, init) => fetch(input, { ...init, cache: "no-store" });
+// Admin reads and every write: never cached.
 export const convexHttp = () => (g.__http ??= new ConvexHttpClient(process.env.CONVEX_URL as string, { fetch: noCacheFetch }));
+// The public site's reads use the normal fetch. Pages that are built on the first visit and refreshed in the background
+// (service, pro and area pages) fail on Vercel if they make a "never cache" request, so these must stay cacheable.
+// getPublicDb adds its own 30 second cache on top.
+const convexPublic = () => (g.__httpPub ??= new ConvexHttpClient(process.env.CONVEX_URL as string));
 const PUBLIC_TTL_MS = 30_000;
 const building = () => process.env.NEXT_PHASE === "phase-production-build";
 
@@ -105,8 +110,8 @@ export async function getPublicDb(): Promise<PublicSource> {
   if (!convexConfigured()) return getDb();
   if (g.__pub && Date.now() - (g.__pubAt ?? 0) < PUBLIC_TTL_MS) return g.__pub;
   try {
-    const r = (await convexHttp().query(anyApi.db.getPublic, { secret: secret() })) as { providers: unknown[]; ratings: unknown[]; settings: DB["settings"] | null };
-    if (!r.settings) { const all = await getDb(); g.__pub = { providers: all.providers, ratings: all.ratings, settings: all.settings }; }
+    const r = (await convexPublic().query(anyApi.db.getPublic, { secret: secret() })) as { providers: unknown[]; ratings: unknown[]; settings: DB["settings"] | null };
+    if (!r.settings) g.__pub = { providers: [], ratings: [], settings: empty.settings }; // a brand new deployment: nothing saved yet
     else g.__pub = normalize({ providers: r.providers as DB["providers"], ratings: r.ratings as DB["ratings"], settings: r.settings });
     g.__pubAt = Date.now();
     return g.__pub;
