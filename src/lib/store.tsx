@@ -53,11 +53,31 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
     es.onmessage = (e) => {
       const { db: next, by } = JSON.parse(e.data) as { db: DB; by: string };
       if (by === me.current) return; // my own change, already applied locally
-      ref.current = next;
-      setDb(next);
+      const merged = withPending(next);
+      ref.current = merged;
+      setDb(merged);
     };
     return () => es.close();
   }, []);
+
+  // My saves that the server has not shown back yet. A snapshot taken before my save landed must not wipe them out.
+  const pending = useRef(new Map<string, { coll: string; rid: string; data: unknown; at: number }>());
+  const withPending = (snap: DB): DB => {
+    const out = { ...snap } as unknown as Record<string, unknown[]>;
+    const now = Date.now();
+    pending.current.forEach((p, key) => {
+      const list = (out[p.coll] ?? []) as { id: string }[];
+      const at = list.findIndex((x) => x.id === p.rid);
+      if (at >= 0 && JSON.stringify(list[at]) === JSON.stringify(p.data)) { pending.current.delete(key); return; } // arrived
+      if (now - p.at > 30000) { pending.current.delete(key); return; }
+      const copy = list.slice();
+      if (at >= 0) copy[at] = p.data as { id: string };
+      else if (p.coll === "workOrders" || p.coll === "requests") copy.unshift(p.data as { id: string });
+      else copy.push(p.data as { id: string });
+      out[p.coll] = copy;
+    });
+    return out as unknown as DB;
+  };
 
   // Apply locally right away, then send to the server which broadcasts to everyone else.
   const upd = (f: (d: DB) => DB): Promise<boolean> => {
@@ -68,10 +88,14 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
     // Send only what this action changed, so a stale tab can never overwrite or remove someone else's newer records.
     const { upserts, settings } = changesBetween(before, next);
     if (!upserts.length && !settings) return Promise.resolve(true);
+    upserts.forEach((u) => pending.current.set(`${u.coll}:${u.rid}`, { coll: u.coll, rid: u.rid, data: u.data, at: Date.now() }));
     return fetch("/api/db", {
       method: "PATCH", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ upserts, settings, by: me.current }),
-    }).then((r) => r.ok).catch(() => false);
+    }).then((r) => r.ok).catch(() => false).then((ok) => {
+      if (!ok) upserts.forEach((u) => pending.current.delete(`${u.coll}:${u.rid}`)); // failed saves are not kept
+      return ok;
+    });
   };
 
   const value: Ctx = {
