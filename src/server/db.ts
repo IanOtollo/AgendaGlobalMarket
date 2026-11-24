@@ -73,8 +73,9 @@ async function fetchRemote(): Promise<DB> {
 /** Everything, for the admin. Falls back to the last good copy if the database is briefly unreachable. */
 export async function getDb(): Promise<DB> {
   if (!convexConfigured()) return (g.__db ??= loadFile());
-  // Fresh while a live subscription is open, otherwise reused for a moment so one page render makes one query.
-  if (g.__db && (g.__live || Date.now() - (g.__at ?? 0) < 1500)) return g.__db;
+  // Reused for a moment so one page render makes one query. A live subscription is not trusted to keep this fresh:
+  // on serverless hosting a paused instance keeps its subscription object but stops receiving updates, so its copy goes stale.
+  if (g.__db && Date.now() - (g.__at ?? 0) < 1500) return g.__db;
   // A write that lands while this read is in flight must not be overwritten by the older data we just fetched.
   const ver = g.__ver ?? 0;
   try {
