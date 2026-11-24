@@ -9,7 +9,7 @@ export const revalidate = 300; // rebuilt in the background at most this often, 
 
 export default async function Image({ params }: { params: { slug: string } }) {
   const p = (await getPublicPros()).find((x) => x.slug === params.slug);
-  if (!p) return ogCard({ eyebrow: "Professional", title: "Agenda Global Market" });
+  if (!p) return ogCard({ eyebrow: "Professional", title: "One Agenda Global Market" });
   return ogCard({
     eyebrow: `${p.category} · ${p.area}, Nairobi`, title: p.name,
     lines: [`${p.years} ${p.years === 1 ? "year" : "years"} experience`, ...(p.rating.count ? [`Rated ${p.rating.avg.toFixed(1)} out of 5 (${p.rating.count})`] : []), ...(p.fromPrice != null ? [`From KES ${p.fromPrice.toLocaleString("en-KE")} per visit`] : [])],

@@ -38,9 +38,9 @@ export default function Login() {
     <main className="grid h-[100dvh] overflow-hidden lg:grid-cols-2">
       <section className="relative hidden overflow-hidden bg-primary p-12 text-primary-foreground lg:flex lg:flex-col lg:justify-between">
         <span className="relative flex items-center gap-3 font-semibold">
-          <span className="inline-flex rounded-xl bg-white px-3 py-2">
+          <span className="inline-flex">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/brand/logo.png" alt="" width={570} height={170} className="h-10 w-auto" />
+            <img src="/brand/logo-dark.png" alt="" width={780} height={638} className="h-28 w-auto" />
           </span>
           <span className="sr-only">{BRAND.name}</span>
         </span>

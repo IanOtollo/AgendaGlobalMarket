@@ -16,11 +16,17 @@ import { LocationSheet } from "./location-sheet";
 
 export function BrandMark({ className }: { className?: string }) {
   return (
-    <span className={cn("flex items-center rounded-lg bg-white px-2 py-1 ring-1 ring-border", className)}>
+    <span className={cn("flex items-center gap-2.5", className)}>
+      {/* The emblem from the logo (transparent, in the right colours for light or dark), with the name set beside it:
+          the full lockup is too tall for a slim header. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/logo-mark.png" alt="" width={190} height={150} className="h-8 w-auto sm:hidden" />
+      <img src="/brand/logo-mark.png" alt="" width={240} height={259} className="logo-on-light h-11 w-auto" />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/logo.png" alt="" width={570} height={170} className="hidden h-9 w-auto sm:block" />
+      <img src="/brand/logo-mark-dark.png" alt="" width={240} height={259} className="logo-on-dark h-11 w-auto" />
+      <span aria-hidden className="hidden leading-none text-foreground sm:block">
+        <span className="block text-[17px] font-bold tracking-wide">ONE AGENDA</span>
+        <span className="mt-1 block text-[10px] font-medium tracking-[0.3em]">GLOBAL MARKET</span>
+      </span>
       <span className="sr-only">{BRAND.name}</span>
     </span>
   );

@@ -1,6 +1,6 @@
 import { ogCard } from "@/components/site/og-card";
 
-export const alt = "Agenda Global Market: house and building maintenance in Nairobi";
+export const alt = "One Agenda Global Market: home, office and building care in Nairobi";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const runtime = "nodejs";

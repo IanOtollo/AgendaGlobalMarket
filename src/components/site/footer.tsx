@@ -24,7 +24,7 @@ export function SiteFooter({ phone, trades }: { phone: string; trades: Trade[] }
           <div>
             <BrandMarkDark />
             <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-inverse-foreground/75">
-              House and building maintenance for homes, offices and commercial property, booked through one office.
+              Premium home, office and building care services, booked through one office.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <ButtonLink href="/become-a-pro" variant="accent">Apply as a pro</ButtonLink>

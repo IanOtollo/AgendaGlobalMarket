@@ -1,6 +1,6 @@
 
 export const BRAND = {
-  name: "Agenda Global Market",
+  name: "One Agenda Global Market",
   tagline: "One Agenda. One World. One Market.",
   email: "info@agendaglobalmarket.co.ke",
   website: "www.agendaglobalmarket.co.ke",

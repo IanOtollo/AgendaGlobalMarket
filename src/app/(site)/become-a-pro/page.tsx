@@ -8,7 +8,7 @@ import { waUrl } from "@/lib/contact";
 import { tradesOf } from "@/lib/trades";
 import { getPublicSettings } from "@/server/public";
 
-export const metadata: Metadata = { title: "Become a pro", description: "Join the Agenda Global Market network of plumbers, carpenters, masons, electricians and painters. We handle the bookings and scheduling.", alternates: { canonical: "/become-a-pro" } };
+export const metadata: Metadata = { title: "Become a pro", description: "Join the One Agenda Global Market network of skilled professionals. We handle the bookings and scheduling.", alternates: { canonical: "/become-a-pro" } };
 export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 export default async function Page() {
@@ -18,7 +18,7 @@ export default async function Page() {
   const apply = waUrl(adminPhone, "Hi, I'd like to apply as a pro.\nTrade:\nYears of experience:\nQualifications:\nArea I'm based in:");
   return (
     <>
-      <PageHero crumbs={[{ label: "Become a pro" }]} title={<>Work with <Highlight>Agenda Global Market</Highlight></>} lead="Are you a skilled tradesperson? Join our network and let the office handle bookings and scheduling.">
+      <PageHero crumbs={[{ label: "Become a pro" }]} title={<>Work with <Highlight>One Agenda Global Market</Highlight></>} lead="Are you a skilled tradesperson? Join our network and let the office handle bookings and scheduling.">
         {apply ? (
           <div className="flex flex-wrap gap-3">
             <TrackedLink event="pro_apply_clicked" href={apply} external variant="accent" size="lg"><MessageCircle className="h-5 w-5" aria-hidden /> Apply on WhatsApp</TrackedLink>

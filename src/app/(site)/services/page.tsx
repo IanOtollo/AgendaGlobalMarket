@@ -8,7 +8,7 @@ import { getPublicPros } from "@/server/public";
 
 export const metadata: Metadata = {
   title: "All services",
-  description: "Browse plumbers, carpenters, masons, electricians and painters in Nairobi. Compare experience, qualifications and ratings, then book through one office.",
+  description: "Browse skilled professionals for home, office and building care in Nairobi, from maintenance to specialised cleaning and pest control. Compare experience, qualifications and ratings, then book through one office.",
   alternates: { canonical: "/services" },
 };
 export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
@@ -21,7 +21,7 @@ export default async function ServicesPage() {
         <Container>
           <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Services" }]} />
           <h1 className="mt-4 text-h1">All services</h1>
-          <p className="mt-3 max-w-[60ch] text-lg text-muted-foreground">{total} {total === 1 ? "professional" : "professionals"} across five trades. Pick a trade, or search by name or area.</p>
+          <p className="mt-3 max-w-[60ch] text-lg text-muted-foreground">{total} {total === 1 ? "professional" : "professionals"} across our services. Pick a service, or search by name or area.</p>
           <div className="mt-8"><CategoryRail /></div>
         </Container>
       </Section>

@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "How it works", description: "Choose 
 export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 const STEPS = [
-  { t: "Choose a trade", d: "Browse plumbers, carpenters, masons, electricians and painters. Each profile shows experience, qualifications, ratings and the area they are based in. Allow your location, or pick an area, to see who is nearest." },
+  { t: "Choose a service", d: "Browse the services we offer, from maintenance trades to specialised cleaning and pest control. Each profile shows experience, qualifications, ratings and the area they are based in. Allow your location, or pick an area, to see who is nearest." },
   { t: "Message the office", d: "Tap WhatsApp or call the office number. Tell us what needs doing and when. You do not need an account, and you never need to contact the professional directly." },
   { t: "We confirm the details", d: "The office agrees the time and the price or estimate with you before any work starts, and checks the professional is free so they are never double-booked." },
   { t: "The work is done", d: "The professional arrives at the agreed time. If the job needs more work than expected, you are told first and nothing extra goes ahead without your agreement." },

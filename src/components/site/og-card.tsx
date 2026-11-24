@@ -18,12 +18,12 @@ export async function ogCard({ eyebrow, title, lines = [], brandOnly = false }: 
       // Link-preview card: the logo, large and centred, on a light panel.
       <div style={{ width: 1200, height: 630, display: "flex", alignItems: "center", justifyContent: "center", background: "#F7F8FA", fontFamily: "Jost" }}>
         {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
-        <img src={logoUri()} width={820} height={245} />
+        <img src={logoUri()} width={636} height={520} />
       </div>
     ) : (
       <div style={{ width: 1200, height: 630, display: "flex", flexDirection: "column", justifyContent: "space-between", background: "#F7F8FA", color: "#101F42", padding: 72, fontFamily: "Jost" }}>
         {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text */}
-        <img src={logoUri()} width={300} height={90} />
+        <img src={logoUri()} width={170} height={139} />
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: 28, color: "#4B5563", marginBottom: 18, fontWeight: 700 }}>{eyebrow}</div>
           <div style={{ fontSize: title.length > 34 ? 68 : 84, fontWeight: 700, lineHeight: 1.05, letterSpacing: -2 }}>{title}</div>

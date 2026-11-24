@@ -38,5 +38,5 @@ export function ContactCta({ phone, title = "Ready to book?", message = "Hi, I'd
 
 /** Readable long-form block (65ch measure). */
 export function Prose({ children }: { children: ReactNode }) {
-  return <div className="max-w-[65ch] space-y-5 text-base leading-relaxed [&_h2]:mt-10 [&_h2]:text-h3 [&_li]:ml-5 [&_li]:list-disc [&_li]:pl-1 [&_ul]:space-y-2">{children}</div>;
+  return <div className="max-w-[65ch] space-y-5 text-base leading-relaxed [&_h2]:mt-10 [&_h2]:text-h3 [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-semibold [&_li]:ml-5 [&_li]:list-disc [&_li]:pl-1 [&_ul]:space-y-2">{children}</div>;
 }

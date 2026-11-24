@@ -39,7 +39,7 @@ export function AdminShell({ children, email }: { children: React.ReactNode; ema
       <aside className="bg-primary text-primary-foreground print:hidden lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-60 lg:shrink-0 lg:flex-col">
         <div className="flex items-center gap-3 px-4 py-3 lg:px-5 lg:py-6">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/logo-mark.png" alt="" width={190} height={150} className="h-9 w-auto rounded-md bg-white px-1.5 py-0.5" />
+          <img src="/brand/logo-mark-dark.png" alt="" width={240} height={259} className="h-11 w-auto" />
           <span className="leading-tight">
             <span className="block text-sm font-semibold">{settings.businessName}</span>
             <span className="block text-xs text-primary-foreground/60">Operations</span>

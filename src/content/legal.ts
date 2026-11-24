@@ -30,7 +30,7 @@ export function getLegalDocs(): Record<string, LegalDoc> {
     description: "The terms that apply when you use this website and book a professional through our office.",
     sections: [
       { id: "who-we-are", title: "Who we are", summary: "We run a booking office. The professionals are independent, not our employees.", clauses: [
-        `${who()} (“we”, “us”) runs an office that connects customers with independent tradespeople (“professionals”) for house and building maintenance in Nairobi, Kenya: plumbing, carpentry, masonry, electrical work and painting.`,
+        `${who()} (“we”, “us”) runs an office that connects customers with independent tradespeople (“professionals”) for home, office and building care in Nairobi, Kenya, including maintenance, specialised cleaning and pest control.`,
         "We are a marketplace. We introduce you to a professional, take the booking, schedule the visit and follow up. The professionals are independent businesses or individuals. They are not our employees, and we do not employ them or supervise how they carry out their trade.",
         "By using this website or booking through the office you agree to these terms.",
       ] },

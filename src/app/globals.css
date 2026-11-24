@@ -98,3 +98,10 @@
 html { scroll-padding-top: 5rem; }
 body { @apply bg-background text-foreground antialiased; font-size: 1rem; line-height: 1.55; }
 h1, h2, h3 { @apply tracking-tight leading-tight; }
+
+/* The logo comes in two transparent versions: original colours for light surfaces, and navy turned white for dark ones. */
+.logo-on-dark { display: none; }
+@media (prefers-color-scheme: dark) {
+  .site .logo-on-light { display: none; }
+  .site .logo-on-dark { display: block; }
+}

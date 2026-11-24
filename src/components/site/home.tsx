@@ -1,11 +1,11 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, MapPin, MessageCircle, Star } from "lucide-react";
 import { tradeBySlug } from "@/lib/trades";
 import { distanceKm } from "@/lib/geo";
-import { cn, digits } from "@/lib/utils";
+import { digits } from "@/lib/utils";
 import { track } from "@/lib/analytics";
 import { Button, ButtonLink } from "@/components/ds/button";
 import { Container, Highlight, Section } from "@/components/ds/primitives";
@@ -42,14 +42,15 @@ export function HomeHero() {
             {place ? <>Home repairs in {place}, done properly.</> : <>Home repairs and maintenance in Nairobi, done properly.</>}
           </h1>
           <p className="mt-5 max-w-[34rem] text-lg leading-relaxed text-muted-foreground">
-            Book qualified plumbers, electricians, carpenters, masons and painters near you through one office.
+            Premium home, office and building care, from maintenance to specialised cleaning and pest control, through one office.
           </p>
           <div ref={searchWrap} className="mt-8 max-w-2xl"><SearchBox variant="hero" /></div>
           <p className="mt-5 flex flex-wrap items-center gap-x-1 gap-y-1 text-[15px] text-muted-foreground">
             <span className="mr-1">Popular:</span>
-            {CATEGORY_LIST.map((c, i) => (
-              <span key={c.slug}><Link href={`/services/${c.slug}`} className="inline-flex min-h-11 items-center font-medium text-foreground underline-offset-4 hover:underline">{c.name}</Link>{i < CATEGORY_LIST.length - 1 && <span aria-hidden className="mx-1">·</span>}</span>
+            {CATEGORY_LIST.slice(0, 5).map((c) => (
+              <span key={c.slug}><Link href={`/services/${c.slug}`} className="inline-flex min-h-11 items-center font-medium text-foreground underline-offset-4 hover:underline">{c.name}</Link><span aria-hidden className="mx-1">·</span></span>
             ))}
+            <Link href="/services" className="inline-flex min-h-11 items-center font-medium text-foreground underline underline-offset-4">All services</Link>
           </p>
         </div>
         <HeroMap />
@@ -162,7 +163,7 @@ export function BecomeProBand() {
     <Section className="border-y border-border bg-muted">
       <Container className="grid items-center gap-10 lg:grid-cols-2">
         <div>
-          <h2 className="text-h2">Work with <Highlight>Agenda Global Market</Highlight></h2>
+          <h2 className="text-h2">Work with <Highlight>One Agenda Global Market</Highlight></h2>
           <p className="mt-4 max-w-[52ch] text-lg text-muted-foreground">Are you a skilled tradesperson? Join our network and let us handle the bookings.</p>
           <div className="mt-8"><ButtonLink href="/become-a-pro" variant="primary" size="lg" onClick={() => track("pro_apply_clicked", { from: "home" })}>Apply as a pro</ButtonLink></div>
         </div>
