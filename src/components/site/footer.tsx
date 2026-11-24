@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MessageCircle, Phone } from "lucide-react";
+import { ArrowUpRight, MessageCircle, Phone } from "lucide-react";
 import { BRAND } from "@/lib/config";
 import { tradesOf } from "@/lib/trades";
 import type { Trade } from "@/lib/types";
@@ -24,7 +24,7 @@ export function SiteFooter({ phone, trades }: { phone: string; trades: Trade[] }
           <div>
             <BrandMarkDark />
             <p className="mt-4 max-w-sm text-[15px] leading-relaxed text-inverse-foreground/75">
-              Premium home, office and building care services, booked through one office.
+              Your trusted property maintenance partner. Premium home, office and building care services, booked through one office.
             </p>
             <div className="mt-6 flex flex-wrap gap-3">
               <ButtonLink href="/become-a-pro" variant="accent">Apply as a pro</ButtonLink>
@@ -67,6 +67,13 @@ export function SiteFooter({ phone, trades }: { phone: string; trades: Trade[] }
             ))}
           </ul>
         </div>
+
+        <p className="mt-4 text-center text-small">
+          <a href="https://marabimadeit.co.ke" target="_blank" rel="noopener noreferrer"
+            className="inline-flex min-h-11 items-center gap-1 text-inverse-foreground/70 underline underline-offset-4 hover:text-inverse-foreground">
+            Marabi made it <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+          </a>
+        </p>
       </Container>
     </footer>
   );

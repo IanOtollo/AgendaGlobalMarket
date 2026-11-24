@@ -7,16 +7,15 @@ import type { Trade } from "./types";
 
 /** The trades the business offers. They live in Settings (editable by the admin); until the admin changes them these defaults apply. */
 export const DEFAULT_TRADES: Trade[] = [
-  { id: "t-plumbing", name: "Plumbing", noun: "Plumbers", icon: "droplets", blurb: "Plumbing and sanitary installations, leak repairs, bathroom and kitchen fitting." },
-  { id: "t-carpentry", name: "Carpentry", noun: "Carpenters", icon: "hammer", blurb: "Doors, windows, cabinets, ceilings, wardrobes and custom woodwork." },
-  { id: "t-masonry", name: "Masonry", noun: "Masons", icon: "brick", blurb: "Walling, plastering, repairs, tiling, stone work and structural finishes." },
-  { id: "t-electrical", name: "Electrical", noun: "Electricians", icon: "zap", blurb: "Installations, repairs, rewiring, lighting, socket fitting and safety upgrades." },
-  { id: "t-painting", name: "Painting", noun: "Painters", icon: "paint", blurb: "Professional painting and decoration, inside and out, wall finishing and protective coatings." },
-  { id: "t-gardening", name: "Gardening & Landscaping", noun: "Gardeners", icon: "garden", blurb: "Gardening, landscaping and lawn care." },
-  { id: "t-solar", name: "Solar Water Heating", noun: "Solar water heating specialists", icon: "sun", blurb: "Solar water heating systems." },
-  { id: "t-laundry", name: "Laundry", noun: "Laundry specialists", icon: "shirt", blurb: "Household and commercial laundry, duvets, beddings and general linen." },
-  { id: "t-cleaning", name: "Specialised Cleaning", noun: "Cleaners", icon: "sparkles", blurb: "Carpet and curtain cleaning, deep upholstery cleaning for sofas, couches, dining chairs and office seats, and stain and odour removal." },
-  { id: "t-pest", name: "Pest Control", noun: "Pest control technicians", icon: "bug", blurb: "Bedbug inspection and eradication, general pest control, cockroach and rodent management, termite treatment and fumigation." },
+  { id: "t-plumbing", name: "Plumbing", noun: "Plumbers", icon: "droplets", blurb: "Leaky tap? Blocked drain? Low water pressure? We fix it fast and right!" },
+  { id: "t-electrical", name: "Electrical", noun: "Electricians", icon: "zap", blurb: "Safe, reliable and efficient electrical solutions for your home or business." },
+  { id: "t-carpentry", name: "Carpentry", noun: "Carpenters", icon: "hammer", blurb: "Quality, custom and reliable carpentry solutions for your home and office." },
+  { id: "t-masonry", name: "Masonry", noun: "Masons", icon: "brick", blurb: "Strong, durable and professional building solutions." },
+  { id: "t-painting", name: "Painting", noun: "Painters", icon: "paint", blurb: "Give your space a fresh, clean and lasting finish." },
+  { id: "t-gardening", name: "Landscaping & Gardening", noun: "Landscapers and gardeners", icon: "garden", blurb: "Beautiful, healthy and well-maintained outdoor spaces." },
+  { id: "t-pest", name: "Fumigation & Pest Control", noun: "Pest control technicians", icon: "bug", blurb: "A cleaner, healthier and pest-free environment for your home or business." },
+  { id: "t-laundry", name: "Laundry & Upholstery", noun: "Laundry and cleaning specialists", icon: "shirt", blurb: "Laundry for household and institutional linen, carpet and curtain cleaning, upholstery cleaning, bedbug removal and deep sanitation." },
+  { id: "t-solar", name: "Solar Water & Energy", noun: "Solar technicians", icon: "sun", blurb: "Clean, reliable and cost-saving energy for your home or business." },
 ];
 
 /** Icons an admin can pick for a trade (stored by key, so the list can grow without touching saved data). */
@@ -42,10 +41,10 @@ export const categorySlug = slugify;
 // Trades that are commonly needed together (used for "Related trades"). This is a fixed editorial mapping, not
 // booking history, so it is labelled "Related trades" and never "customers also booked". New trades fall back to their neighbours.
 const EDITORIAL: Record<string, string[]> = {
-  Plumbing: ["Masonry", "Painting"], Carpentry: ["Painting", "Masonry"], Masonry: ["Plumbing", "Painting"],
-  Electrical: ["Carpentry", "Painting"], Painting: ["Masonry", "Carpentry"],
-  "Gardening & Landscaping": ["Pest Control", "Masonry"], "Solar Water Heating": ["Plumbing", "Electrical"],
-  Laundry: ["Specialised Cleaning", "Pest Control"], "Specialised Cleaning": ["Laundry", "Pest Control"], "Pest Control": ["Specialised Cleaning", "Gardening & Landscaping"],
+  Plumbing: ["Solar Water & Energy", "Masonry"], Electrical: ["Solar Water & Energy", "Carpentry"], Carpentry: ["Painting", "Masonry"],
+  Masonry: ["Plumbing", "Painting"], Painting: ["Masonry", "Carpentry"], "Landscaping & Gardening": ["Fumigation & Pest Control", "Masonry"],
+  "Fumigation & Pest Control": ["Laundry & Upholstery", "Landscaping & Gardening"], "Laundry & Upholstery": ["Fumigation & Pest Control", "Painting"],
+  "Solar Water & Energy": ["Plumbing", "Electrical"],
 };
 export function relatedOf(name: string, trades: { name: string }[]): string[] {
   const names = trades.map((t) => t.name);
