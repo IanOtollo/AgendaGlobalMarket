@@ -31,7 +31,10 @@ const empty: DB = {
 
 export const convexConfigured = () => Boolean(process.env.CONVEX_URL && process.env.APP_SECRET);
 const secret = () => process.env.APP_SECRET as string;
-export const convexHttp = () => (g.__http ??= new ConvexHttpClient(process.env.CONVEX_URL as string));
+// Next.js caches server-side fetches by default, which would freeze the first answer Convex gave (even an empty one
+// from build time). Never cache these.
+const noCacheFetch: typeof fetch = (input, init) => fetch(input, { ...init, cache: "no-store" });
+export const convexHttp = () => (g.__http ??= new ConvexHttpClient(process.env.CONVEX_URL as string, { fetch: noCacheFetch }));
 const PUBLIC_TTL_MS = 30_000;
 const building = () => process.env.NEXT_PHASE === "phase-production-build";
 

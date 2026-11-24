@@ -9,6 +9,7 @@ import { getDb } from "@/server/db";
 
 export const metadata: Metadata = { title: "Admin Dashboard", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store"; // the admin always shows what is in the database right now, never a cached answer
 
 // Second gate (the middleware is the first): no valid session, no admin page and no data.
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
