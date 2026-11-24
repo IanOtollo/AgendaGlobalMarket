@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select } from "@/components/ui/select";
 import { STATUS_LABEL } from "@/lib/config";
 import { slot } from "@/lib/schedule";
+import { totalOf } from "@/lib/billing";
 import { isWorking } from "@/lib/team";
 import { cn, ease, money } from "@/lib/utils";
 import type { WorkOrder } from "@/lib/types";
@@ -216,7 +217,7 @@ function DayDrawer({ date, jobs, onClose }: { date: string | null; jobs: WorkOrd
                     </dl>
                     {w.description && <p className="mt-3 line-clamp-3 text-sm text-muted-foreground">{w.description}</p>}
                     <div className="mt-3 flex items-center justify-between gap-3 border-t border-border/60 pt-3 text-sm">
-                      <span className="text-muted-foreground">{typeof w.price === "number" ? money(w.price) : "No price set"}</span>
+                      <span className="text-muted-foreground">{totalOf(w) > 0 ? money(totalOf(w)) : "No price set"}</span>
                       <Link href={`/admin/work-orders/${w.id}`} className="font-medium underline-offset-4 hover:underline">Open work order</Link>
                     </div>
                   </article>
