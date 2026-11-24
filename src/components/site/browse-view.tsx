@@ -10,7 +10,8 @@ import { cn, digits } from "@/lib/utils";
 import { Button, ButtonLink } from "@/components/ds/button";
 import { Chip } from "@/components/ds/primitives";
 import { Sheet } from "@/components/ds/sheet";
-import { ProCard, ProGrid, kes } from "./pro-card";
+import { ProCard, ProGrid } from "./pro-card";
+import { kes } from "@/lib/kes";
 import { useLocation, useSiteData } from "./providers";
 import type { PublicPro } from "@/lib/types";
 

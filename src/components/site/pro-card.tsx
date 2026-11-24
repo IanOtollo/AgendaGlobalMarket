@@ -11,7 +11,7 @@ import { track } from "@/lib/analytics";
 import { Pill, Skeleton } from "@/components/ds/primitives";
 import type { PublicPro } from "@/lib/types";
 
-export const kes = (n: number) => `KES ${n.toLocaleString("en-KE")}`;
+import { kes } from "@/lib/kes";
 
 const AVAIL = {
   today: { label: "Available today", tone: "success" as const },
@@ -77,7 +77,7 @@ export function ProCard({ pro, km, variant = "default", selected }: { pro: Publi
           {km != null && <><span aria-hidden className="text-muted-foreground">·</span><span className="text-muted-foreground">{kmLabel(km)} away</span></>}
         </p>
         <p className="mt-1 text-[15px] text-muted-foreground">{pro.years} {pro.years === 1 ? "year" : "years"} experience</p>
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-3 mt-4">
+        <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3">
           <span className="min-w-0 truncate text-[15px] font-semibold">{pro.fromPrice != null ? <>From {kes(pro.fromPrice)} <span className="font-normal text-muted-foreground">/ visit</span></> : <span className="font-medium text-muted-foreground">View profile</span>}</span>
           <span className="flex shrink-0 items-center gap-1 text-[15px] font-medium text-foreground">
             <span className="hidden opacity-0 transition-opacity duration-150 group-hover:opacity-100 sm:inline">View</span>
