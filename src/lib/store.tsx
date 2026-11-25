@@ -130,12 +130,12 @@ export function StoreProvider({ children, initial }: { children: ReactNode; init
       upd((d) => {
         const r = d.requests.find((x) => x.id === id);
         if (!r) return d;
-        let cust = d.customers.find((c) => c.phone === r.phone);
+        let cust = r.phone ? d.customers.find((c) => c.phone === r.phone) : undefined;
         const customers = cust ? d.customers : [...d.customers, (cust = { id: uid("c"), name: r.name, phone: r.phone, address: r.address })];
         const wo: WorkOrder = {
-          id: uid("w"), no: nextNo(d), customerId: cust.id, requestId: r.id, category: r.category,
-          title: `${r.category} service`, description: r.description, providerId: r.providerId ?? null,
-          status: "new", priority: "normal", notes: "", createdAt: new Date().toISOString(),
+          id: uid("w"), no: nextNo(d), customerId: cust.id, requestId: r.id, category: r.category || "General",
+          title: r.category ? `${r.category} service` : `Enquiry from ${r.name}`, description: r.description, providerId: r.providerId ?? null,
+          status: "new", priority: "normal", notes: r.email ? `Customer email: ${r.email}` : "", area: r.address || undefined, createdAt: new Date().toISOString(),
         };
         return {
           ...d, customers, workOrders: [wo, ...d.workOrders],

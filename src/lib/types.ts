@@ -24,7 +24,7 @@ export type PublicPro = {
 export type PublicSettings = { businessName: string; adminPhone: string; trades: Trade[]; areas: ServiceArea[] };
 export type Customer = { id: string; name: string; phone: string; address: string };
 export type Request = {
-  id: string; name: string; phone: string; address: string; category: string;
+  id: string; name: string; phone: string; email?: string; address: string; category: string;
   description: string; providerId?: string; status: "new" | "converted" | "dismissed"; createdAt: string;
 };
 export type WOStatus = "new" | "scheduled" | "in_progress" | "completed" | "cancelled";

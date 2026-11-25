@@ -5,7 +5,7 @@ import { FAQ_HELP } from "@/lib/faq";
 import { JsonLd, faqLd } from "@/lib/schema";
 import { getPublicSettings } from "@/server/public";
 
-export const metadata: Metadata = { title: "Help centre", description: "Answers about booking, prices, cancellations, ratings, your location and joining as a professional.", alternates: { canonical: "/help" } };
+export const metadata: Metadata = { title: "FAQ", description: "Answers about booking, prices, cancellations, ratings, your location and joining as a professional.", alternates: { canonical: "/help" } };
 export const revalidate = 30; // rebuilt in the background at most this often, so traffic is served from cache
 
 export default async function Page() {
@@ -14,7 +14,7 @@ export default async function Page() {
   return (
     <>
       <JsonLd data={faqLd(all)} />
-      <PageHero crumbs={[{ label: "Help centre" }]} title="How can we help?" lead="Quick answers. If yours is not here, message the office." />
+      <PageHero crumbs={[{ label: "FAQ" }]} title="FAQ" lead="Quick answers. If yours is not here, message the office." />
       <Section>
         <Container className="max-w-3xl space-y-14">
           {FAQ_HELP.map((g) => (

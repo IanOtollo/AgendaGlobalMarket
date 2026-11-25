@@ -1,6 +1,7 @@
 import { SiteProviders } from "@/components/site/providers";
 import { SiteHeader } from "@/components/site/header";
 import { SiteFooter } from "@/components/site/footer";
+import { ScrollToTop } from "@/components/site/scroll-to-top";
 import { Analytics } from "@/components/site/analytics";
 import { getPublicPros, getPublicSettings } from "@/server/public";
 
@@ -17,6 +18,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <SiteHeader />
         <main id="main" className="flex-1">{children}</main>
         <SiteFooter phone={settings.adminPhone} trades={settings.trades} />
+        <ScrollToTop />
       </div>
       <Analytics />
     </SiteProviders>

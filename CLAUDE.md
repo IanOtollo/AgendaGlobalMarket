@@ -15,7 +15,7 @@ Next.js 14 (App Router) · TypeScript · Tailwind 3.4 · Framer Motion · lucide
 ## Security model (Phase 0.5)
 - The public site is rendered from `src/server/public.ts` only (a field-by-field whitelist). Never spread a provider object into a public payload.
 - `/admin/*`, `/api/db` and `/api/db/stream` need the admin session (signed cookie). Checked in `src/middleware.ts`, the admin layout and every route handler. One admin account; credentials live in `.env.local` (`npm run admin:create`).
-- The only public APIs are `GET/POST /api/rate/[id]` and `GET /api/public/data` (cached 30 s, public model only), both rate-limited and validated.
+- The only public APIs are `GET/POST /api/rate/[id]`, `GET /api/public/data` (cached 30 s, public model only) and `POST /api/contact` (the website contact form: same-origin only, rate-limited, honeypot, validated, capped at 300 waiting requests; it can only add one new `request`, which shows in the admin under Requests, and returns just `ok`).
 - `npm run test:privacy` (server must be running) fails if any public page, script, API or stream contains private data or a phone number other than the admin line. Run it after any change to public pages or APIs.
 - Run the site with `npm run dev:keepalive` (auto-restarts on failure). There is no demo data: a new install starts empty.
 

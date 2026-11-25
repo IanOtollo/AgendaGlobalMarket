@@ -142,7 +142,7 @@ export function SiteHeader() {
               <li><Link href="/services" className="flex min-h-12 items-center border-b border-border text-base font-semibold">All services</Link></li>
             </ul>
             <ul className="mt-4">
-              {[["How it works", "/how-it-works"], ["For pros", "/become-a-pro"], ["Trust and safety", "/trust-and-safety"], ["About", "/about"], ["Contact", "/contact"], ["Help centre", "/help"]].map(([l, h]) => (
+              {[["How it works", "/how-it-works"], ["For pros", "/become-a-pro"], ["Trust and safety", "/trust-and-safety"], ["About", "/about"], ["Contact", "/contact"], ["FAQ", "/help"]].map(([l, h]) => (
                 <li key={h}><Link href={h} className="flex min-h-12 items-center border-b border-border text-base">{l}</Link></li>
               ))}
             </ul>

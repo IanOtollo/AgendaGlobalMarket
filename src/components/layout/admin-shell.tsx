@@ -19,8 +19,9 @@ const isActive = (path: string, href: string) => (href === "/admin" ? path === h
 
 export function AdminShell({ children, email }: { children: React.ReactNode; email: string }) {
   const path = usePathname();
-  const { settings, workOrders } = useStore();
+  const { settings, workOrders, requests } = useStore();
   const waiting = workOrders.filter((w) => w.status === "new").length;
+  const newRequests = requests.filter((r) => r.status === "new").length;
   const [workerId, setWorkerId] = useState<string | null>(null);
   const [more, setMore] = useState(false);
   useEffect(() => setMore(false), [path]);
@@ -59,6 +60,9 @@ export function AdminShell({ children, email }: { children: React.ReactNode; ema
                     <Icon className="h-4 w-4" /> {label}
                     {label === "Work Orders" && waiting > 0 && (
                       <span className="ml-auto rounded-md bg-brand px-1.5 py-0.5 text-xs font-semibold text-primary">{waiting}</span>
+                    )}
+                    {label === "Requests" && newRequests > 0 && (
+                      <span className="ml-auto rounded-md bg-brand px-1.5 py-0.5 text-xs font-semibold text-primary">{newRequests}</span>
                     )}
                   </Link>
                 );
@@ -111,7 +115,7 @@ export function AdminShell({ children, email }: { children: React.ReactNode; ema
             <button onClick={() => setMore((m) => !m)} aria-expanded={more} aria-haspopup="dialog"
               className={cn("relative flex w-full flex-col items-center gap-1 px-1 py-2.5 text-[11px] font-medium transition", moreActive || more ? "text-foreground" : "text-muted-foreground")}>
               {moreActive && <span className="absolute inset-x-5 top-0 h-0.5 bg-brand" />}
-              <MoreHorizontal className="h-5 w-5" strokeWidth={moreActive || more ? 2.25 : 1.75} />
+              <span className="relative"><MoreHorizontal className="h-5 w-5" strokeWidth={moreActive || more ? 2.25 : 1.75} />{newRequests > 0 && <span className="absolute -right-2.5 -top-1.5 min-w-4 rounded-md bg-brand px-1 text-center text-[10px] font-semibold leading-4 text-primary">{newRequests}</span>}</span>
               <span>More</span>
             </button>
           </li>

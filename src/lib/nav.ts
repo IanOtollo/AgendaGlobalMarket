@@ -1,4 +1,4 @@
-import { BarChart3, CalendarDays, ClipboardList, HardHat, LayoutDashboard, Settings, Users, type LucideIcon } from "lucide-react";
+import { BarChart3, CalendarDays, Inbox, ClipboardList, HardHat, LayoutDashboard, Settings, Users, type LucideIcon } from "lucide-react";
 
 export type NavItem = { href: string; label: string; icon: LucideIcon; keywords: string; blurb: string };
 export type NavGroup = { title: string; items: NavItem[] };
@@ -13,6 +13,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     title: "Operations",
     items: [
+      { href: "/admin/requests", label: "Requests", icon: Inbox, keywords: "enquiries contact messages website leads inbox new customers", blurb: "Messages from the website contact form" },
       { href: "/admin/work-orders", label: "Work Orders", icon: ClipboardList, keywords: "jobs tasks invoices billing payments", blurb: "Every job, from call to payment" },
       { href: "/admin/schedule", label: "Schedule", icon: CalendarDays, keywords: "calendar week availability dispatch", blurb: "Who is where this week" },
       { href: "/admin/reports", label: "Reports", icon: BarChart3, keywords: "invoices balances outstanding payments productivity performance export csv revenue analysis", blurb: "Invoices, balances and worker productivity" },

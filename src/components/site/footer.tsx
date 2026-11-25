@@ -19,7 +19,7 @@ export function SiteFooter({ phone, trades }: { phone: string; trades: Trade[] }
   const entity = SITE.legal.entity || BRAND.name;
   return (
     <footer className="on-dark print:hidden bg-inverse text-inverse-foreground">
-      <Container className="py-16">
+      <Container className="pb-4 pt-16">
         <div className="grid gap-12 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div>
             <BrandMarkDark />
@@ -54,7 +54,7 @@ export function SiteFooter({ phone, trades }: { phone: string; trades: Trade[] }
           <nav aria-label="Support">
             <p className="text-[15px] font-semibold">Support</p>
             <ul className={`mt-3 space-y-0.5 ${col}`}>
-              {[["Help centre", "/help"], ["Contact us", "/contact"], ["Cancellations and refunds", "/legal/cancellation-refunds"], ["Accessibility", "/accessibility"]].map(([l, h]) => <li key={h}><Link href={h} className={link}>{l}</Link></li>)}
+              {[["FAQ", "/help"], ["Contact us", "/contact"], ["Cancellations and refunds", "/legal/cancellation-refunds"], ["Accessibility", "/accessibility"]].map(([l, h]) => <li key={h}><Link href={h} className={link}>{l}</Link></li>)}
             </ul>
           </nav>
         </div>
@@ -68,7 +68,7 @@ export function SiteFooter({ phone, trades }: { phone: string; trades: Trade[] }
           </ul>
         </div>
 
-        <p className="mt-4 text-center text-small">
+        <p className="mt-1 text-center text-small">
           <a href="https://marabimadeit.co.ke" target="_blank" rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center gap-1 text-inverse-foreground/70 underline underline-offset-4 hover:text-inverse-foreground">
             Marabi made it <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />

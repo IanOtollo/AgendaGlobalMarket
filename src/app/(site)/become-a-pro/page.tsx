@@ -24,7 +24,7 @@ export default async function Page() {
             <TrackedLink event="pro_apply_clicked" href={apply} external variant="accent" size="lg"><MessageCircle className="h-5 w-5" aria-hidden /> Apply on WhatsApp</TrackedLink>
             <ButtonLink href={`tel:${adminPhone}`} variant="secondary" size="lg"><Phone className="h-5 w-5" aria-hidden /> {adminPhone}</ButtonLink>
           </div>
-        ) : <p className="text-base text-muted-foreground">Applications open soon.</p>}
+        ) : null}
       </PageHero>
       <Section>
         <Container className="grid gap-14 lg:grid-cols-2">

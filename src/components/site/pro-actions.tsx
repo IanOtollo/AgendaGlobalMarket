@@ -70,7 +70,7 @@ export function BookingPanel({ pro, phone }: { pro: PublicPro; phone: string }) 
               <ButtonLink href={waLink(tel, pro)} external variant="accent" size="lg" block onClick={() => book("whatsapp")}><MessageCircle className="h-5 w-5" aria-hidden /> WhatsApp us about {first}</ButtonLink>
               <div className="text-center"><a href={`tel:${tel}`} onClick={() => book("call")} className="inline-flex min-h-11 items-center gap-2 text-[15px] font-medium underline underline-offset-4"><Phone className="h-4 w-4" aria-hidden /> Or call {tel}</a></div>
             </div>
-          ) : <p className="mt-6 rounded-lg bg-muted p-3 text-[15px] text-muted-foreground">Booking contact details are being set up.</p>}
+          ) : null}
           <ul className="mt-6 space-y-2.5 border-t border-border pt-5 text-[15px]">
             {["One office handles the booking", "We confirm the time and price with you before work starts", "Your location stays on your device"].map((t) => (
               <li key={t} className="flex gap-2.5"><Check className="mt-1 h-4 w-4 shrink-0" aria-hidden />{t}</li>

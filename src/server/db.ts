@@ -172,6 +172,17 @@ export async function applyChanges(c: Changes, by: string) {
   subscribers().forEach((fn) => fn(db, by));
 }
 
+// Public contact form: the one other way a visitor can add data, and only a new "request" for the office to follow up.
+// It cannot read, change or remove anything, and the number of waiting requests is capped so it cannot flood the database.
+const MAX_WAITING_REQUESTS = 300;
+export async function addContactRequest(r: { name: string; phone: string; email?: string; category: string; address: string; description: string }): Promise<"ok" | "unavailable"> {
+  const db = await getDb();
+  if (db.requests.filter((x) => x.status === "new").length >= MAX_WAITING_REQUESTS) return "unavailable";
+  const request = { id: uid("r"), ...r, status: "new" as const, createdAt: new Date().toISOString() };
+  await applyChanges({ upserts: [{ coll: "requests", rid: request.id, data: request }] }, "public-contact");
+  return "ok";
+}
+
 // Public rating submission: the only way a visitor can change data, and only to add one rating to a completed job.
 export async function addRatingToJob(workOrderId: string, stars: number, comment: string): Promise<"ok" | "unavailable" | "already_rated"> {
   const db = await getDb();
